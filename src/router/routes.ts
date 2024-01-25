@@ -14,6 +14,19 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/AboutView.vue'),
     meta: { layout: DefaultLayout }
   },
+  {
+    path: '/projects',
+    name: 'Projects',
+    component: () => import('@/views/ProjectsView.vue'),
+    meta: { layout: DefaultLayout }
+  },
+
+  {
+    path: '/project/:id',
+    name: 'Project',
+    component: () => import('@/views/ProjectView.vue'),
+    meta: { layout: DefaultLayout }
+  },
 
   {
     path: '/:pathMatch(.*)*',

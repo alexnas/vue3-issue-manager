@@ -18,7 +18,7 @@ defineProps({
   >
     <Icon
       class="w-6 min-w-[theme('spacing[5]')] text-3xl hover:text-orange-400"
-      :icon="item.icon || 'tdesign:dart-board'"
+      :icon="item.icon || 'bi:app'"
       :inline="true"
     />
     <span class="mx-4">{{ item.label }}</span>

@@ -11,4 +11,11 @@ interface ISideMenuItem {
   icon: string
 }
 
-export type { INavbarMenuItem, ISideMenuItem }
+interface IProject {
+  id: string
+  title: string
+  description: string
+  description_markup: 'PLAIN' | 'MARKDOWN' | 'ASCIIDOC'
+}
+
+export type { INavbarMenuItem, ISideMenuItem, IProject }
