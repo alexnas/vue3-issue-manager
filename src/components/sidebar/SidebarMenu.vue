@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
+import { Icon } from '@iconify/vue'
 import type { ISideMenuItem } from '@/types'
 import SidebarLinkItem from '@/components/sidebar/SidebarLinkItem.vue'
 import { activeMenuItem, inactiveMenuItem } from '@/assets/styles/twClasses'
-import { Icon } from '@iconify/vue'
 
 import projects from '@/data/dummyProjects'
 
@@ -37,6 +37,12 @@ let generalMenu: ISideMenuItem[] = reactive([
     label: 'About',
     path: '/about',
     icon: 'mdi:about-circle-outline'
+  },
+  {
+    name: 'Users',
+    label: 'Users',
+    path: '/users',
+    icon: 'ph:users'
   }
 ])
 </script>
