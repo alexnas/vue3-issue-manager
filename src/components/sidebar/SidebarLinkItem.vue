@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { activeMenuItem, inactiveMenuItem } from '@/assets/styles/twClasses'
+import type { PropType } from 'vue'
 import { Icon } from '@iconify/vue'
+import type { ISideMenuItem } from '@/types'
+import { activeMenuItem, inactiveMenuItem } from '@/assets/styles/twClasses'
 
 defineProps({
   item: {
-    type: Object,
+    type: Object as PropType<ISideMenuItem>,
     default: () => ({})
   }
 })

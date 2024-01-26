@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import type { PropType } from 'vue'
+import type { IProject } from '@/types'
 import CardWrapper from '@/components/projects/CardWrapper.vue'
 
 defineProps({
   project: {
-    type: Object,
+    type: Object as PropType<IProject>,
     default: () => ({})
   }
 })
