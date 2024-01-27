@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import ProjectsViewContainer from '@/views/ProjectsViewContainer.vue'
+import ProjectViewContainer from '@/views/ProjectViewContainer.vue'
 import ProjectTable from '@/components/projects/ProjectTable.vue'
 import projects from '@/data/dummyProjects'
 
@@ -11,7 +11,7 @@ const getTitle = () => {
 </script>
 
 <template>
-  <projects-view-container :pageTitle="`${getTitle()}`">
+  <project-view-container :pageTitle="`${getTitle()}`">
     <project-table />
-  </projects-view-container>
+  </project-view-container>
 </template>
