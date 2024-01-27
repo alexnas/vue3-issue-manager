@@ -42,23 +42,32 @@ const handleDeleteClick = async (user: IUser) => {
 </script>
 
 <template>
-  <div class="mb-2 flex h-12 max-h-12 w-auto items-center justify-end gap-8">
-    <div class="flex gap-2 text-gray-600">
-      Filter <input class="w-full max-w-72" type="text" placeholder="Filter" />
+  <div
+    class="mb-2 flex h-12 max-h-12 w-auto items-center justify-end gap-8 text-gray-600 dark:text-gray-200"
+  >
+    <div class="flex gap-3 pl-2">
+      <div class="text-md flex items-center">Filter</div>
+      <input
+        class="w-full max-w-72 rounded-sm border-2 border-gray-400 bg-gray-300 p-1 text-gray-600 dark:bg-gray-300"
+        type="text"
+        placeholder="Filter"
+      />
     </div>
     <AddNewButton @openAddNew="handleAddNewClick()" />
   </div>
 
   <div v-if="users.length > 0" class="relative overflow-x-auto shadow-md sm:rounded-lg">
-    <table class="w-full bg-gray-50 text-left text-base text-gray-500">
-      <thead class="sticky top-0 bg-gray-100 text-sm uppercase text-gray-700">
+    <table class="w-full text-left text-sm text-gray-500 rtl:text-right dark:text-gray-300">
+      <thead
+        class="sticky top-0 bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-100"
+      >
         <tr>
           <th scope="col" class="px-4 py-3">#</th>
           <th
             v-for="({ field, title }, ids) in tableCols"
             :key="ids"
             scope="col"
-            class="cursor-pointer whitespace-nowrap rounded-lg px-4 py-3 hover:bg-teal-100"
+            class="cursor-pointer whitespace-nowrap px-4 py-3 hover:rounded-md hover:bg-teal-800"
             @click="handleSort(field)"
           >
             {{ title }}
@@ -67,7 +76,11 @@ const handleDeleteClick = async (user: IUser) => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(user, idx) in users" :key="user.id" class="border-b bg-white hover:bg-gray-100">
+        <tr
+          v-for="(user, idx) in users"
+          :key="user.id"
+          class="border-b odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-900 even:dark:bg-gray-800"
+        >
           <td class="px-4 py-3">{{ idx + 1 }}</td>
           <td class="px-4 py-3">{{ user.id }}</td>
           <td class="px-4 py-3">
