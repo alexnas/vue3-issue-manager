@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/user'
-import TableViewContainer from '@/views/TableViewContainer.vue'
+import MainViewContainer from '@/views/MainViewContainer.vue'
 import UsersTable from '@/components/users/UsersTable.vue'
 
 const userStore = useUserStore()
@@ -11,7 +11,7 @@ const pageTitle = 'Users List'
 </script>
 
 <template>
-  <table-view-container :pageTitle="pageTitle">
+  <main-view-container :pageTitle="pageTitle">
     <users-table :users="users" />
-  </table-view-container>
+  </main-view-container>
 </template>

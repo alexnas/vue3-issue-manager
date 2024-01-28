@@ -1,23 +1,15 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
+import { storeToRefs } from 'pinia'
 import { Icon } from '@iconify/vue'
 import type { ISideMenuItem } from '@/types'
+import { useProjectStore } from '@/stores/project'
 import SidebarLinkItem from '@/components/sidebar/SidebarLinkItem.vue'
+import SidebarProjectItem from '@/components/sidebar/SidebarProjectItem.vue'
 import { activeMenuItem, inactiveMenuItem } from '@/assets/styles/twClasses'
 
-import projects from '@/data/dummyProjects'
-
-let projectsMenu = reactive(
-  projects.map((project) => {
-    const item = {
-      name: project.title,
-      label: project.title,
-      path: `/project/${project.id}`,
-      icon: 'bi:app'
-    }
-    return item
-  })
-)
+const projectStore = useProjectStore()
+const { projects } = storeToRefs(projectStore)
 
 let generalMenu: ISideMenuItem[] = reactive([
   {
@@ -55,7 +47,7 @@ let generalMenu: ISideMenuItem[] = reactive([
       to="/projects"
     >
       <div class="flex w-full justify-between">
-        <span class="mx-4">Boards</span>
+        <span class="mx-4">All Boards</span>
         <Icon
           class="w-6 min-w-[theme('spacing[5]')] text-3xl hover:text-orange-400"
           :icon="'fluent-mdl2:boards'"
@@ -64,8 +56,8 @@ let generalMenu: ISideMenuItem[] = reactive([
       </div>
     </router-link>
 
-    <nav class="mt-2" v-for="item in projectsMenu" :key="`${item.name} `">
-      <sidebar-link-item :item="item" />
+    <nav class="mt-2" v-for="project in projects" :key="`${project.id}`">
+      <sidebar-project-item :project="project" />
     </nav>
 
     <div class="mx-6 my-6 border-b-2 border-gray-400"></div>
