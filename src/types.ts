@@ -16,6 +16,9 @@ interface IProject {
   title: string
   description: string
   description_markup: 'PLAIN' | 'MARKDOWN' | 'ASCIIDOC'
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
 }
 
 interface IUser {
