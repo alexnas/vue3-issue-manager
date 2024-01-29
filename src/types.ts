@@ -12,7 +12,7 @@ interface ISideMenuItem {
 }
 
 interface IProject {
-  id: string
+  id: number
   title: string
   description: string
   description_markup: 'PLAIN' | 'MARKDOWN' | 'ASCIIDOC'
