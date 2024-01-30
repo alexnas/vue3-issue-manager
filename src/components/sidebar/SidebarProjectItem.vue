@@ -16,7 +16,7 @@ defineProps({
   <router-link
     class="ml-1 flex items-center whitespace-nowrap border-l-4 px-4 py-1"
     :class="[+$route.path.split('/').slice(-1) === +project.id ? activeMenuItem : inactiveMenuItem]"
-    :to="`/tasks/project/${project.id}`"
+    :to="`/issues/project/${project.id}`"
   >
     <Icon
       class="w-6 min-w-[theme('spacing[5]')] text-3xl hover:text-orange-400"

@@ -28,9 +28,9 @@ const routes: Array<RouteRecordRaw> = [
   },
 
   {
-    path: '/tasks/project/:id',
+    path: '/issues/project/:id',
     name: 'Project',
-    component: () => import('@/views/ProjectTasksView.vue'),
+    component: () => import('@/views/ProjectIssuesView.vue'),
     meta: { layout: DefaultLayout }
   },
 

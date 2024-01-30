@@ -16,7 +16,6 @@ defineProps({
         <h1 class="pl-2 text-3xl font-semibold text-gray-700 dark:text-gray-200">
           {{ pageTitle }}
         </h1>
-        <div>Tasks for the project</div>
       </div>
     </div>
 

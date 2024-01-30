@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useProjectStore } from '@/stores/project'
 import ProjectViewContainer from '@/views/ProjectViewContainer.vue'
-import ProjectTasksTable from '@/components/projects/ProjectTasksTable.vue'
+import ProjectIssuesTable from '@/components/projects/ProjectIssuesTable.vue'
 
 const projectStore = useProjectStore()
 const { projects } = storeToRefs(projectStore)
@@ -23,6 +23,6 @@ const projecById = (id: number) => {
 
 <template>
   <project-view-container :pageTitle="`${projectSelected?.title || 'Project is not found'}`">
-    <project-tasks-table v-if="projectSelected" :project="projectSelected" />
+    <project-issues-table v-if="projectSelected" :project="projectSelected" />
   </project-view-container>
 </template>
