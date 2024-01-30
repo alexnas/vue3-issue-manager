@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { PropType } from 'vue'
+import { Icon } from '@iconify/vue'
 import type { IUser, IUserKeys, IUserTableCol } from '@/types.ts'
 import AddNewButton from '@/components/shared/AddNewButton.vue'
+import { formatDateTime } from '@/tools/formatDate'
 
 defineProps({
   users: {
@@ -42,8 +44,10 @@ const handleDeleteClick = async (user: IUser) => {
 </script>
 
 <template>
+  <div class="pl-2">Totally: {{ users.length }} users.</div>
+
   <div
-    class="mb-2 flex h-12 max-h-12 w-auto items-center justify-end gap-8 text-gray-600 dark:text-gray-200"
+    class="mb-2 mt-0 flex h-12 max-h-12 w-auto items-center justify-end gap-8 text-gray-600 dark:text-gray-200 lg:-mt-6"
   >
     <div class="flex gap-3 pl-2">
       <div class="text-md flex items-center">Filter</div>
@@ -57,9 +61,9 @@ const handleDeleteClick = async (user: IUser) => {
   </div>
 
   <div v-if="users.length > 0" class="relative overflow-x-auto shadow-md sm:rounded-lg">
-    <table class="w-full text-left text-sm text-gray-500 rtl:text-right dark:text-gray-300">
+    <table class="w-full text-left text-sm text-gray-500 dark:text-gray-300 rtl:text-right">
       <thead
-        class="sticky top-0 bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-100"
+        class="sticky top-0 bg-teal-100 text-xs uppercase text-gray-700 dark:bg-teal-700 dark:text-gray-100"
       >
         <tr>
           <th scope="col" class="px-4 py-3">#</th>
@@ -67,7 +71,7 @@ const handleDeleteClick = async (user: IUser) => {
             v-for="({ field, title }, ids) in tableCols"
             :key="ids"
             scope="col"
-            class="cursor-pointer whitespace-nowrap px-4 py-3 hover:rounded-md hover:bg-teal-800"
+            class="cursor-pointer whitespace-nowrap px-4 py-3 hover:rounded-md hover:bg-teal-200 dark:hover:bg-teal-800"
             @click="handleSort(field)"
           >
             {{ title }}
@@ -79,7 +83,7 @@ const handleDeleteClick = async (user: IUser) => {
         <tr
           v-for="(user, idx) in users"
           :key="user.id"
-          class="border-b odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-900 even:dark:bg-gray-800"
+          class="border-b odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-800 even:dark:bg-gray-700"
         >
           <td class="px-4 py-3">{{ idx + 1 }}</td>
           <td class="px-4 py-3">{{ user.id }}</td>
@@ -89,9 +93,10 @@ const handleDeleteClick = async (user: IUser) => {
           </td>
           <td class="px-4 py-3">{{ user.name }}</td>
           <td class="px-4 py-3">{{ user.email }}</td>
-          <td class="px-4 py-3">{{ 'useItemNameById(user.roleId, roles)' }}</td>
-          <td class="px-4 py-3">{{ 'formatDateTime(user.createdAt)' }}</td>
-          <td class="px-4 py-3">{{ 'formatDateTime(user.updatedAt)' }}</td>
+          <td class="px-4 py-3">{{ user.roleId }}</td>
+          <!-- <td class="px-4 py-3">{{ 'useItemNameById(user.roleId, roles)' }}</td> -->
+          <td class="px-4 py-3">{{ formatDateTime(user.createdAt) }}</td>
+          <td class="px-4 py-3">{{ formatDateTime(user.updatedAt) }}</td>
           <td class="flex px-4 py-3">
             <button
               @click.stop="handleViewClick(user)"
