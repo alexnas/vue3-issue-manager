@@ -1,40 +1,13 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import { Icon } from '@iconify/vue'
+import { useIssueStore } from '@/stores/issue'
+import type { IIssue, IIssueKeys, IIssueTableCol } from '@/types'
 import { formatDateTime } from '@/tools/formatDate'
 import AddNewButton from '@/components/shared/AddNewButton.vue'
 
-import issues from '@/data/dummyKanbanData'
-
-interface IIssueTableCol {
-  field: IIssueKeys
-  title: string
-  position: number
-  isVisible: boolean
-}
-
-type IIssueKeys = keyof IIssue
-
-interface IIssue {
-  id: number // 29004
-  title: string // 'Issue - 29004',
-  status: string // 'InProgress' = ['To Do', 'In Progress', 'Returned', 'Review', 'Testing', 'Done']
-  summary: string // 'Fix cannot open user’s default database SQL error.',
-  type: string // 'Bug' = ['Task', 'Bag', 'Feature', 'Improvement', 'Other']
-  priority: string // 'Critical' = ['Unimportant', 'Low', 'Normal', 'High', 'Critical', 'UltraCritical']
-  tags: string // 'Database,Sql2008',
-  estimate: number // estimated time of job (hours) === 4 (in Hours)
-  assignee: string // 'Janet Leverling', finally == assigneeId: number == userId
-  rankid: number // 1 == текущий порядковый номер в колонке
-  projectId: number //:ForeignKey == Number (id)
-  creator: string // 'Boss Eduard', ==> finally == creatorId: number == userId
-  color?: string // '#02897B'
-  className?: string // 'e-bug, e-critical, e-janet-leverling'
-  description?: string // 'Any ... additional information to clarify the issue'
-  deadline: string // Date of deadlane
-  isActive: boolean // issue is marked as active
-  createdAt: string // Date of creation
-  updatedAt: string // Date of update
-}
+const issueStore = useIssueStore()
+const { issues: issues } = storeToRefs(issueStore)
 
 const issueTableCols: IIssueTableCol[] = [
   { field: 'id', title: 'ID', position: 1, isVisible: true },
@@ -46,10 +19,10 @@ const issueTableCols: IIssueTableCol[] = [
   { field: 'priority', title: 'priority', position: 1, isVisible: true },
   { field: 'tags', title: 'tags', position: 1, isVisible: true },
   { field: 'estimate', title: 'estimate', position: 1, isVisible: true },
-  { field: 'assignee', title: 'assignee', position: 1, isVisible: true },
-  { field: 'rankid', title: 'rankid', position: 1, isVisible: true },
-  { field: 'projectId', title: 'projectId', position: 1, isVisible: true },
-  { field: 'creator', title: 'creator', position: 1, isVisible: true },
+  { field: 'assigneeId', title: 'assignee', position: 1, isVisible: true },
+  { field: 'rankId', title: 'rankId', position: 1, isVisible: true },
+  { field: 'projectId', title: 'project', position: 1, isVisible: true },
+  { field: 'creatorId', title: 'creator', position: 1, isVisible: true },
   { field: 'color', title: 'color', position: 1, isVisible: true },
   { field: 'className', title: 'className', position: 1, isVisible: true },
   { field: 'description', title: 'description', position: 1, isVisible: true },
@@ -81,7 +54,6 @@ const handleDeleteClick = async (issue: IIssue) => {
 
 <template>
   <div class="pl-2">Totally: {{ issues.length }} issues.</div>
-
   <div
     class="mb-2 mt-0 flex h-12 max-h-12 w-auto items-center justify-end gap-8 text-gray-600 dark:text-gray-200 lg:-mt-6"
   >
@@ -134,10 +106,10 @@ const handleDeleteClick = async (issue: IIssue) => {
           <td class="px-4 py-3">{{ issue.priority }}</td>
           <td class="px-4 py-3">{{ issue.tags }}</td>
           <td class="px-4 py-3">{{ issue.estimate }}</td>
-          <td class="px-4 py-3">{{ issue.assignee }}</td>
-          <td class="px-4 py-3">{{ issue.rankid }}</td>
+          <td class="px-4 py-3">{{ issue.assigneeId }}</td>
+          <td class="px-4 py-3">{{ issue.rankId }}</td>
           <td class="px-4 py-3">{{ issue.projectId }}</td>
-          <td class="px-4 py-3">{{ issue.creator }}</td>
+          <td class="px-4 py-3">{{ issue.creatorId }}</td>
           <td class="px-4 py-3">{{ issue.color }}</td>
           <td class="px-4 py-3">{{ issue.className }}</td>
           <td class="px-4 py-3">{{ issue.description }}</td>
@@ -175,4 +147,3 @@ const handleDeleteClick = async (issue: IIssue) => {
 </template>
 
 <style scoped></style>
-data/dummyKanbanData

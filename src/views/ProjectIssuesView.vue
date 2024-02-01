@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useProjectStore } from '@/stores/project'
 import ProjectViewContainer from '@/views/ProjectViewContainer.vue'
-import ProjectIssuesTable from '@/components/projects/ProjectIssuesTable.vue'
+import ProjectIssuesTable from '@/components/issues/ProjectIssuesTable.vue'
 
 const projectStore = useProjectStore()
 const { projects } = storeToRefs(projectStore)

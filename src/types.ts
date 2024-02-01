@@ -44,6 +44,41 @@ interface IAuthResponse {
   user: IUser
 }
 
+interface IIssueTableCol {
+  field: IIssueKeys
+  title: string
+  position: number
+  isVisible: boolean
+}
+
+type IIssueKeys = keyof IIssue
+
+type IIssueStatus = 'ToDo' | 'InProgress' | 'Returned' | 'Review' | 'Testing' | 'Done'
+type IIssueType = 'Task' | 'Bag' | 'Feature' | 'Improvement' | 'Other'
+type IIssuePriority = 'Unimportant' | 'Low' | 'Normal' | 'High' | 'Critical' | 'UltraCritical'
+
+interface IIssue {
+  id: number // 29004
+  title: string // 'Issue - 29004',
+  summary: string // Example: 'Fix cannot open user’s default database SQL error.',
+  status: IIssueStatus // 'InProgress' = ['To Do', 'In Progress', 'Returned', 'Review', 'Testing', 'Done']
+  type: IIssueType // 'Task' = ['Task', 'Bag', 'Feature', 'Improvement', 'Other']
+  priority: IIssuePriority // 'Normal' = ['Unimportant', 'Low', 'Normal', 'High', 'Critical', 'UltraCritical']
+  tags: string // Example: 'Database,Sql2008',
+  estimate: number // estimated time of job (hours) === 4 (in Hours)
+  assigneeId?: number // Example: 'Janet Leverling', finally == assigneeId: number == userId (null when created and is 'ToDo')
+  rankId: number // 1 == current order in the column
+  projectId: number // ProjectId :ForeignKey == Number (id)
+  creatorId: number // Example: 'Boss Eduard', ==> finally == creatorId: number == userId
+  color?: string // '#02897B'
+  className?: string // Example: 'e-bug, e-critical, e-janet-leverling'
+  description?: string // Example: 'Any ... additional information to clarify the issue'
+  deadline: string // Date of deadlane
+  isActive: boolean // issue is marked as active
+  createdAt: string // Date of creation
+  updatedAt: string // Date of update
+}
+
 export type {
   INavbarMenuItem,
   ISideMenuItem,
@@ -51,5 +86,11 @@ export type {
   IUser,
   IAuthResponse,
   IUserKeys,
-  IUserTableCol
+  IUserTableCol,
+  IIssueTableCol,
+  IIssueKeys,
+  IIssueStatus,
+  IIssueType,
+  IIssuePriority,
+  IIssue
 }
