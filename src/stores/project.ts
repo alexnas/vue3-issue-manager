@@ -6,9 +6,14 @@ import ProjectService from '@/services/ProjectService'
 
 export const useProjectStore = defineStore('project', () => {
   const projects = ref<IProject[]>([])
+  const currentProject = ref<IProject | null>(null)
 
   const loading = ref<boolean>(false)
   const error = ref<string | null>(null)
+
+  const setCurrentProject = (project: IProject) => {
+    currentProject.value = { ...project }
+  }
 
   const getProjects = async () => {
     try {
@@ -29,14 +34,36 @@ export const useProjectStore = defineStore('project', () => {
     }
   }
 
+  const getProjectById = async (id: number) => {
+    try {
+      loading.value = true
+      const { data } = await ProjectService.fetchOneProjectById(id)
+      currentProject.value = data
+      loading.value = false
+      error.value = null
+    } catch (err: any) {
+      loading.value = false
+      if (axios.isAxiosError(error)) {
+        error.value = err.message
+        console.log('Error', err.message)
+      } else {
+        error.value = 'Unexpected error encountered'
+        console.log('Error', err)
+      }
+    }
+  }
+
   onMounted(async () => {
     await getProjects()
   })
 
   return {
     projects,
+    currentProject,
     loading,
     error,
-    getProjects
+    getProjects,
+    getProjectById,
+    setCurrentProject
   }
 })

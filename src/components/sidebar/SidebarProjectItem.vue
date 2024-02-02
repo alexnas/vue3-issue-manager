@@ -1,8 +1,16 @@
 <script setup lang="ts">
-import type { PropType } from 'vue'
+import { onMounted, type PropType } from 'vue'
+import { useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { Icon } from '@iconify/vue'
 import type { IProject } from '@/types'
+import { useProjectStore } from '@/stores/project'
 import { activeMenuItem, inactiveMenuItem } from '@/assets/styles/twClasses'
+import { getProjecById } from '@/tools/getProjectById'
+
+const route = useRoute()
+const projectStore = useProjectStore()
+const { projects } = storeToRefs(projectStore)
 
 defineProps({
   project: {
@@ -10,10 +18,20 @@ defineProps({
     default: () => ({})
   }
 })
+
+const handleProject = (id: number) => {
+  const selectedProject = getProjecById(projects.value, id)
+  selectedProject && projectStore.setCurrentProject(selectedProject)
+}
+
+onMounted(() => {
+  handleProject(+route.params.id)
+})
 </script>
 
 <template>
   <router-link
+    @click="handleProject(+project.id)"
     class="ml-1 flex items-center whitespace-nowrap border-l-4 px-4 py-1"
     :class="[+$route.path.split('/').slice(-1) === +project.id ? activeMenuItem : inactiveMenuItem]"
     :to="`/issues/project/${project.id}`"
