@@ -1,4 +1,4 @@
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import type { IProject } from '@/types'
@@ -52,10 +52,6 @@ export const useProjectStore = defineStore('project', () => {
       }
     }
   }
-
-  onMounted(async () => {
-    await getProjects()
-  })
 
   return {
     projects,

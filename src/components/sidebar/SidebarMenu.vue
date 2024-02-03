@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { Icon } from '@iconify/vue'
 import type { ISideMenuItem } from '@/types'
@@ -7,7 +7,10 @@ import { useProjectStore } from '@/stores/project'
 import SidebarLinkItem from '@/components/sidebar/SidebarLinkItem.vue'
 import SidebarProjectItem from '@/components/sidebar/SidebarProjectItem.vue'
 import { activeMenuItem, inactiveMenuItem } from '@/assets/styles/twClasses'
+import { useRoute } from 'vue-router'
+import { getProjecById } from '@/tools/getProjectById'
 
+const route = useRoute()
 const projectStore = useProjectStore()
 const { projects } = storeToRefs(projectStore)
 const isHiddenMenu = ref(true)
@@ -42,6 +45,19 @@ let generalMenu: ISideMenuItem[] = reactive([
 const openDropDownMenu = () => {
   isHiddenMenu.value = !isHiddenMenu.value
 }
+
+const handleSelectProject = (id: number) => {
+  const selectedProject = getProjecById(projects.value, id)
+  selectedProject && projectStore.setCurrentProject(selectedProject)
+}
+
+onMounted(async () => {
+  await projectStore.getProjects()
+  handleSelectProject(+route.params.id)
+
+  const selectedProject = getProjecById(projects.value, +route.params.id)
+  selectedProject && projectStore.setCurrentProject(selectedProject)
+})
 </script>
 
 <template>
@@ -78,7 +94,7 @@ const openDropDownMenu = () => {
       class="z-10 w-full divide-y divide-gray-600 rounded-lg bg-gray-700 shadow"
     >
       <nav class="mt-2" v-for="project in projects" :key="`${project.id}`">
-        <sidebar-project-item :project="project" />
+        <sidebar-project-item :project="project" @select-project="handleSelectProject" />
       </nav>
     </div>
 

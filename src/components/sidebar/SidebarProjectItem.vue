@@ -1,37 +1,28 @@
 <script setup lang="ts">
-import { onMounted, type PropType } from 'vue'
-import { useRoute } from 'vue-router'
-import { storeToRefs } from 'pinia'
+import type { PropType } from 'vue'
 import { Icon } from '@iconify/vue'
 import type { IProject } from '@/types'
-import { useProjectStore } from '@/stores/project'
 import { activeMenuItem, inactiveMenuItem } from '@/assets/styles/twClasses'
-import { getProjecById } from '@/tools/getProjectById'
 
-const route = useRoute()
-const projectStore = useProjectStore()
-const { projects } = storeToRefs(projectStore)
-
-defineProps({
+const props = defineProps({
   project: {
     type: Object as PropType<IProject>,
     default: () => ({})
   }
 })
 
-const handleProject = (id: number) => {
-  const selectedProject = getProjecById(projects.value, id)
-  selectedProject && projectStore.setCurrentProject(selectedProject)
-}
+const emit = defineEmits<{
+  (e: 'selectProject', id: number): void
+}>()
 
-onMounted(() => {
-  handleProject(+route.params.id)
-})
+const onSelectProject = () => {
+  emit('selectProject', +props.project.id)
+}
 </script>
 
 <template>
   <router-link
-    @click="handleProject(+project.id)"
+    @click="onSelectProject()"
     class="ml-1 flex items-center whitespace-nowrap border-l-4 px-4 py-1"
     :class="[+$route.path.split('/').slice(-1) === +project.id ? activeMenuItem : inactiveMenuItem]"
     :to="`/issues/project/${project.id}`"
