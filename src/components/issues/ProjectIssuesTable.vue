@@ -7,13 +7,14 @@ import { useProjectStore } from '@/stores/project'
 import { useIssueStore } from '@/stores/issue'
 import { formatDateTime } from '@/tools/formatDate'
 import { getUserById } from '@/tools/getUserById'
+import { getProjectById } from '@/tools/getProjectById'
 import AddNewButton from '@/components/shared/AddNewButton.vue'
 
 const userStore = useUserStore()
 const { users } = storeToRefs(userStore)
 
 const projectStore = useProjectStore()
-const { currentProject } = storeToRefs(projectStore)
+const { projects, currentProject } = storeToRefs(projectStore)
 
 const issueStore = useIssueStore()
 const { issues: issues } = storeToRefs(issueStore)
@@ -118,7 +119,7 @@ const handleDeleteClick = async (issue: IIssue) => {
             <td class="px-4 py-3">{{ issue.estimate }}</td>
             <td class="px-4 py-3">{{ getUserById(users, issue.assigneeId)?.name }}</td>
             <td class="px-4 py-3">{{ issue.rankId }}</td>
-            <td class="px-4 py-3">{{ issue.projectId }}</td>
+            <td class="px-4 py-3">{{ getProjectById(projects, issue.projectId)?.title }}</td>
             <td class="px-4 py-3">{{ getUserById(users, issue.creatorId)?.name }}</td>
             <td class="px-4 py-3">{{ issue.color }}</td>
             <td class="px-4 py-3">{{ issue.className }}</td>

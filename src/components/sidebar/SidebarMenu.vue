@@ -8,7 +8,7 @@ import SidebarLinkItem from '@/components/sidebar/SidebarLinkItem.vue'
 import SidebarProjectItem from '@/components/sidebar/SidebarProjectItem.vue'
 import { activeMenuItem, inactiveMenuItem } from '@/assets/styles/twClasses'
 import { useRoute } from 'vue-router'
-import { getProjecById } from '@/tools/getProjectById'
+import { getProjectById } from '@/tools/getProjectById'
 
 const route = useRoute()
 const projectStore = useProjectStore()
@@ -47,7 +47,7 @@ const openDropDownMenu = () => {
 }
 
 const handleSelectProject = (id: number) => {
-  const selectedProject = getProjecById(projects.value, id)
+  const selectedProject = getProjectById(projects.value, id)
   selectedProject && projectStore.setCurrentProject(selectedProject)
 }
 
@@ -55,7 +55,7 @@ onMounted(async () => {
   await projectStore.getProjects()
   handleSelectProject(+route.params.id)
 
-  const selectedProject = getProjecById(projects.value, +route.params.id)
+  const selectedProject = getProjectById(projects.value, +route.params.id)
   selectedProject && projectStore.setCurrentProject(selectedProject)
 })
 </script>
