@@ -63,99 +63,100 @@ const handleDeleteClick = async (issue: IIssue) => {
 </script>
 
 <template>
-  <div v-if="currentProject">
-    <div class="pl-2">Totally: {{ issues.length }} issues.</div>
-    <div
-      class="mb-2 mt-0 flex h-12 max-h-12 w-auto items-center justify-end gap-8 text-gray-600 dark:text-gray-200 lg:-mt-6"
-    >
-      <div class="flex gap-3 pl-2">
-        <div class="text-md flex items-center">Filter</div>
-        <input
-          class="w-full max-w-72 rounded-sm border-2 border-gray-400 bg-gray-300 p-1 text-gray-600 dark:bg-gray-300"
-          type="text"
-          placeholder="Filter"
-        />
-      </div>
-      <AddNewButton @openAddNew="handleAddNewClick()" />
+  <div class="pl-2">Totally: {{ issues.length }} issues.</div>
+  <div
+    class="mb-2 mt-0 flex h-12 max-h-12 w-auto items-center justify-end gap-8 text-gray-600 dark:text-gray-200 lg:-mt-6"
+  >
+    <div class="flex gap-3 pl-2">
+      <div class="text-md flex items-center">Filter</div>
+      <input
+        class="w-full max-w-72 rounded-sm border-2 border-gray-400 bg-gray-300 p-1 text-gray-600 dark:bg-gray-300"
+        type="text"
+        placeholder="Filter"
+      />
     </div>
-
-    <div v-if="issues.length >= 0" class="relative overflow-x-auto shadow-md sm:rounded-lg">
-      <table class="w-full text-left text-sm text-gray-500 dark:text-gray-300 rtl:text-right">
-        <thead
-          class="sticky top-0 bg-teal-100 text-xs uppercase text-gray-700 dark:bg-teal-700 dark:text-gray-100"
-        >
-          <tr>
-            <th scope="col" class="px-4 py-3">#</th>
-            <th
-              v-for="{ field, title } in issueTableCols"
-              :key="field"
-              scope="col"
-              class="cursor-pointer whitespace-nowrap px-4 py-3 hover:rounded-md hover:bg-teal-200 dark:hover:bg-teal-800"
-              @click="handleSort(field)"
-            >
-              {{ title }}
-            </th>
-            <th scope="col" class="px-4 py-3">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(issue, idx) in issues"
-            :key="issue.id"
-            class="border-b odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-800 even:dark:bg-gray-700"
-          >
-            <td class="px-4 py-3">{{ idx + 1 }}</td>
-            <td class="px-4 py-3">{{ issue.id }}</td>
-            <td class="px-4 py-3">
-              <Icon v-if="issue.isActive" icon="mdi:tick" class="text-3xl text-green-400" />
-              <Icon v-else icon="mdi:cancel" class="text-3xl text-red-300" />
-            </td>
-            <td class="px-4 py-3">{{ issue.title }}</td>
-            <td class="px-4 py-3">{{ issue.status }}</td>
-            <td class="px-4 py-3">{{ issue.summary }}</td>
-            <td class="px-4 py-3">{{ issue.type }}</td>
-            <td class="px-4 py-3">{{ issue.priority }}</td>
-            <td class="px-4 py-3">{{ issue.tags }}</td>
-            <td class="px-4 py-3">{{ issue.estimate }}</td>
-            <td class="px-4 py-3">{{ getUserById(users, issue.assigneeId)?.name }}</td>
-            <td class="px-4 py-3">{{ issue.rankId }}</td>
-            <td class="px-4 py-3">{{ getProjectById(projects, issue.projectId)?.title }}</td>
-            <td class="px-4 py-3">{{ getUserById(users, issue.creatorId)?.name }}</td>
-            <td class="px-4 py-3">{{ issue.color }}</td>
-            <td class="px-4 py-3">{{ issue.className }}</td>
-            <td class="px-4 py-3">{{ issue.description }}</td>
-            <td class="px-4 py-3">{{ issue.deadline }}</td>
-            <td class="px-4 py-3">{{ formatDateTime(issue.createdAt) }}</td>
-            <td class="px-4 py-3">{{ formatDateTime(issue.updatedAt) }}</td>
-            <td class="flex px-4 py-3">
-              <button
-                @click.stop="handleViewClick(issue)"
-                type="button"
-                class="mr-4 font-medium text-green-400 hover:text-green-600 hover:underline"
-              >
-                VIEW
-              </button>
-              <button
-                @click.stop="handleEditClick(issue)"
-                type="button"
-                class="mr-4 font-medium text-blue-300 hover:text-blue-600 hover:underline"
-              >
-                EDIT
-              </button>
-              <button
-                @click.stop="handleDeleteClick(issue)"
-                type="button"
-                class="font-medium text-rose-300 hover:text-rose-600 hover:underline"
-              >
-                DEL
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div v-else>Sorry, no entries</div>
+    <AddNewButton @openAddNew="handleAddNewClick()" />
   </div>
+
+  <div
+    v-if="currentProject && issues.length >= 0"
+    class="relative overflow-x-auto shadow-md sm:rounded-lg"
+  >
+    <table class="w-full text-left text-sm text-gray-500 dark:text-gray-300 rtl:text-right">
+      <thead
+        class="sticky top-0 bg-teal-100 text-xs uppercase text-gray-700 dark:bg-teal-700 dark:text-gray-100"
+      >
+        <tr>
+          <th scope="col" class="px-4 py-3">#</th>
+          <th
+            v-for="{ field, title } in issueTableCols"
+            :key="field"
+            scope="col"
+            class="cursor-pointer whitespace-nowrap px-4 py-3 hover:rounded-md hover:bg-teal-200 dark:hover:bg-teal-800"
+            @click="handleSort(field)"
+          >
+            {{ title }}
+          </th>
+          <th scope="col" class="px-4 py-3">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="(issue, idx) in issues"
+          :key="issue.id"
+          class="border-b odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-800 even:dark:bg-gray-700"
+        >
+          <td class="px-4 py-3">{{ idx + 1 }}</td>
+          <td class="px-4 py-3">{{ issue.id }}</td>
+          <td class="px-4 py-3">
+            <Icon v-if="issue.isActive" icon="mdi:tick" class="text-3xl text-green-400" />
+            <Icon v-else icon="mdi:cancel" class="text-3xl text-red-300" />
+          </td>
+          <td class="px-4 py-3">{{ issue.title }}</td>
+          <td class="px-4 py-3">{{ issue.status }}</td>
+          <td class="px-4 py-3">{{ issue.summary }}</td>
+          <td class="px-4 py-3">{{ issue.type }}</td>
+          <td class="px-4 py-3">{{ issue.priority }}</td>
+          <td class="px-4 py-3">{{ issue.tags }}</td>
+          <td class="px-4 py-3">{{ issue.estimate }}</td>
+          <td class="px-4 py-3">{{ getUserById(users, issue.assigneeId)?.name }}</td>
+          <td class="px-4 py-3">{{ issue.rankId }}</td>
+          <td class="px-4 py-3">{{ getProjectById(projects, issue.projectId)?.title }}</td>
+          <td class="px-4 py-3">{{ getUserById(users, issue.creatorId)?.name }}</td>
+          <td class="px-4 py-3">{{ issue.color }}</td>
+          <td class="px-4 py-3">{{ issue.className }}</td>
+          <td class="px-4 py-3">{{ issue.description }}</td>
+          <td class="px-4 py-3">{{ issue.deadline }}</td>
+          <td class="px-4 py-3">{{ formatDateTime(issue.createdAt) }}</td>
+          <td class="px-4 py-3">{{ formatDateTime(issue.updatedAt) }}</td>
+          <td class="flex px-4 py-3">
+            <button
+              @click.stop="handleViewClick(issue)"
+              type="button"
+              class="mr-4 font-medium text-green-400 hover:text-green-600 hover:underline"
+            >
+              VIEW
+            </button>
+            <button
+              @click.stop="handleEditClick(issue)"
+              type="button"
+              class="mr-4 font-medium text-blue-300 hover:text-blue-600 hover:underline"
+            >
+              EDIT
+            </button>
+            <button
+              @click.stop="handleDeleteClick(issue)"
+              type="button"
+              class="font-medium text-rose-300 hover:text-rose-600 hover:underline"
+            >
+              DEL
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div v-else>Sorry, no entries</div>
 </template>
 
 <style scoped></style>
