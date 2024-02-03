@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { Icon } from '@iconify/vue'
 import type { ISideMenuItem } from '@/types'
@@ -10,6 +10,7 @@ import { activeMenuItem, inactiveMenuItem } from '@/assets/styles/twClasses'
 
 const projectStore = useProjectStore()
 const { projects } = storeToRefs(projectStore)
+const isHiddenMenu = ref(true)
 
 let generalMenu: ISideMenuItem[] = reactive([
   {
@@ -37,28 +38,49 @@ let generalMenu: ISideMenuItem[] = reactive([
     icon: 'ph:users'
   }
 ])
+
+const openDropDownMenu = () => {
+  isHiddenMenu.value = !isHiddenMenu.value
+}
 </script>
 
 <template>
-  <div class="overflow-y-auto">
+  <div class="flex items-center justify-between gap-4 pr-4">
     <router-link
-      class="ml-1 flex items-center whitespace-nowrap px-4 py-1"
+      class="ml-1 flex w-full items-center whitespace-nowrap px-4 py-1"
       :class="[$route.name === 'Projects' ? activeMenuItem : inactiveMenuItem]"
       to="/projects"
     >
       <div class="flex w-full justify-between">
-        <span class="mx-4">All Boards</span>
-        <Icon
-          class="w-6 min-w-[theme('spacing[5]')] text-3xl hover:text-orange-400"
-          :icon="'fluent-mdl2:boards'"
-          :inline="true"
-        />
+        <div class="flex items-center justify-start">
+          <Icon
+            class="w-6 min-w-[theme('spacing[5]')] text-3xl hover:text-orange-400"
+            :icon="'fluent-mdl2:boards'"
+            :inline="true"
+          />
+          <span class="mx-4">Projects</span>
+        </div>
       </div>
     </router-link>
+    <button
+      @click="openDropDownMenu()"
+      class="cursor-pointer rounded-lg border-2 border-gray-500 p-2 text-center text-xl font-medium text-teal-500 hover:bg-gray-500 hover:text-orange-400"
+    >
+      <Icon class="w-5" :icon="'flowbite:angle-down-solid'" :inline="true" />
+    </button>
+  </div>
 
-    <nav class="mt-2" v-for="project in projects" :key="`${project.id}`">
-      <sidebar-project-item :project="project" />
-    </nav>
+  <div class="overflow-y-auto">
+    <!-- Dropdown menu -->
+    <div
+      v-if="!isHiddenMenu"
+      id="dropdownInformation"
+      class="z-10 w-full divide-y divide-gray-600 rounded-lg bg-gray-700 shadow"
+    >
+      <nav class="mt-2" v-for="project in projects" :key="`${project.id}`">
+        <sidebar-project-item :project="project" />
+      </nav>
+    </div>
 
     <div class="mx-6 my-6 border-b-2 border-gray-400"></div>
 
