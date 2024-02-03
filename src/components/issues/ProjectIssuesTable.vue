@@ -2,11 +2,16 @@
 import { storeToRefs } from 'pinia'
 import { Icon } from '@iconify/vue'
 import type { IIssue, IIssueKeys, IIssueTableCol } from '@/types'
+import { useUserStore } from '@/stores/user'
+import { useProjectStore } from '@/stores/project'
 import { useIssueStore } from '@/stores/issue'
 import { formatDateTime } from '@/tools/formatDate'
+import { getUserById } from '@/tools/getUserById'
 import AddNewButton from '@/components/shared/AddNewButton.vue'
 
-import { useProjectStore } from '@/stores/project'
+const userStore = useUserStore()
+const { users } = storeToRefs(userStore)
+
 const projectStore = useProjectStore()
 const { currentProject } = storeToRefs(projectStore)
 
@@ -111,10 +116,10 @@ const handleDeleteClick = async (issue: IIssue) => {
             <td class="px-4 py-3">{{ issue.priority }}</td>
             <td class="px-4 py-3">{{ issue.tags }}</td>
             <td class="px-4 py-3">{{ issue.estimate }}</td>
-            <td class="px-4 py-3">{{ issue.assigneeId }}</td>
+            <td class="px-4 py-3">{{ getUserById(users, issue.assigneeId)?.name }}</td>
             <td class="px-4 py-3">{{ issue.rankId }}</td>
             <td class="px-4 py-3">{{ issue.projectId }}</td>
-            <td class="px-4 py-3">{{ issue.creatorId }}</td>
+            <td class="px-4 py-3">{{ getUserById(users, issue.creatorId)?.name }}</td>
             <td class="px-4 py-3">{{ issue.color }}</td>
             <td class="px-4 py-3">{{ issue.className }}</td>
             <td class="px-4 py-3">{{ issue.description }}</td>
