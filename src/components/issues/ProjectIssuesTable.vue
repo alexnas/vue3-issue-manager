@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
 import { Icon } from '@iconify/vue'
 import type { IIssue, IIssueKeys, IIssueTableCol } from '@/types'
@@ -60,6 +61,11 @@ const handleEditClick = (issue: IIssue) => {
 const handleDeleteClick = async (issue: IIssue) => {
   alert(`Delete Issue title, ${issue.title}`)
 }
+
+watchEffect(() => {
+  currentProject.value?.id
+  issueStore.getIssues()
+})
 </script>
 
 <template>

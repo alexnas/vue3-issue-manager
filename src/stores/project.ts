@@ -13,6 +13,8 @@ export const useProjectStore = defineStore('project', () => {
 
   const setCurrentProject = (project: IProject) => {
     currentProject.value = { ...project }
+    localStorage.setItem('currentProject', JSON.stringify({ ...project }))
+    return currentProject.value
   }
 
   const getProjects = async () => {

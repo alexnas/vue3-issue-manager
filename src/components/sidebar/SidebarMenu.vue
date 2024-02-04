@@ -7,10 +7,8 @@ import { useProjectStore } from '@/stores/project'
 import SidebarLinkItem from '@/components/sidebar/SidebarLinkItem.vue'
 import SidebarProjectItem from '@/components/sidebar/SidebarProjectItem.vue'
 import { activeMenuItem, inactiveMenuItem } from '@/assets/styles/twClasses'
-import { useRoute } from 'vue-router'
 import { getProjectById } from '@/tools/getProjectById'
 
-const route = useRoute()
 const projectStore = useProjectStore()
 const { projects } = storeToRefs(projectStore)
 const isHiddenMenu = ref(true)
@@ -52,11 +50,10 @@ const handleSelectProject = (id: number) => {
 }
 
 onMounted(async () => {
+  const data = localStorage.getItem('currentProject')
+  const currentProject = data ? JSON.parse(data) : null
+  projectStore.setCurrentProject(currentProject)
   await projectStore.getProjects()
-  handleSelectProject(+route.params.id)
-
-  const selectedProject = getProjectById(projects.value, +route.params.id)
-  selectedProject && projectStore.setCurrentProject(selectedProject)
 })
 </script>
 

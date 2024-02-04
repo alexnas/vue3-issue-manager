@@ -1,4 +1,4 @@
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import type { IIssue } from '@/types'
@@ -11,9 +11,12 @@ export const useIssueStore = defineStore('issue', () => {
   const error = ref<string | null>(null)
 
   const getIssues = async () => {
+    const data = localStorage.getItem('currentProject')
+    const currentProject = data ? JSON.parse(data) : null
+    const queryParams = { projectId: currentProject.id }
     try {
       loading.value = true
-      const { data } = await IssueService.fetchUsers()
+      const { data } = await IssueService.fetchUsers(queryParams)
       issues.value = data
       loading.value = false
       error.value = null
@@ -28,10 +31,6 @@ export const useIssueStore = defineStore('issue', () => {
       }
     }
   }
-
-  onMounted(async () => {
-    await getIssues()
-  })
 
   return { issues, loading, error, getIssues }
 })
