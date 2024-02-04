@@ -7,4 +7,7 @@ export default class ProjectService {
   static async fetchProjects(): Promise<AxiosResponse<IProject[]>> {
     return $api.get<IProject[]>(PROJECT_ENDPOINT)
   }
+  static async fetchOneProjectById(id: number): Promise<AxiosResponse<IProject>> {
+    return $api.get<IProject>(`${PROJECT_ENDPOINT}/${id}`)
+  }
 }

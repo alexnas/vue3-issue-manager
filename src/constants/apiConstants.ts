@@ -9,3 +9,4 @@ export const LOGOUT_ENDPOINT = '/auth/logout'
 export const REFRESH_ENDPOINT = '/auth/refresh'
 
 export const PROJECT_ENDPOINT = '/project'
+export const ISSUE_ENDPOINT = '/issue'

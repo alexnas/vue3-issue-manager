@@ -1,15 +1,19 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { storeToRefs } from 'pinia'
+import { onClickOutside } from '@vueuse/core'
 import { Icon } from '@iconify/vue'
 import type { ISideMenuItem } from '@/types'
 import { useProjectStore } from '@/stores/project'
 import SidebarLinkItem from '@/components/sidebar/SidebarLinkItem.vue'
 import SidebarProjectItem from '@/components/sidebar/SidebarProjectItem.vue'
 import { activeMenuItem, inactiveMenuItem } from '@/assets/styles/twClasses'
+import { getProjectById } from '@/tools/getProjectById'
 
 const projectStore = useProjectStore()
 const { projects } = storeToRefs(projectStore)
+const isHiddenMenu = ref(true)
+const targetDropDown = ref(null)
 
 let generalMenu: ISideMenuItem[] = reactive([
   {
@@ -37,28 +41,70 @@ let generalMenu: ISideMenuItem[] = reactive([
     icon: 'ph:users'
   }
 ])
+
+onClickOutside(targetDropDown, () => {
+  isHiddenMenu.value = true
+})
+
+const handleSelectProject = (id: number) => {
+  const selectedProject = getProjectById(projects.value, id)
+  selectedProject && projectStore.setCurrentProject(selectedProject)
+}
+
+onMounted(async () => {
+  const data = localStorage.getItem('currentProject')
+  const currentProject = data ? JSON.parse(data) : null
+  projectStore.setCurrentProject(currentProject)
+  await projectStore.getProjects()
+})
 </script>
 
 <template>
-  <div class="overflow-y-auto">
+  <div class="flex items-center justify-between gap-4 pr-4">
     <router-link
-      class="ml-1 flex items-center whitespace-nowrap px-4 py-1"
+      class="ml-1 flex w-full items-center whitespace-nowrap px-4 py-1"
       :class="[$route.name === 'Projects' ? activeMenuItem : inactiveMenuItem]"
       to="/projects"
     >
       <div class="flex w-full justify-between">
-        <span class="mx-4">All Boards</span>
-        <Icon
-          class="w-6 min-w-[theme('spacing[5]')] text-3xl hover:text-orange-400"
-          :icon="'fluent-mdl2:boards'"
-          :inline="true"
-        />
+        <div class="flex items-center justify-start">
+          <Icon
+            class="w-6 min-w-[theme('spacing[5]')] text-3xl hover:text-orange-400"
+            :icon="'fluent-mdl2:boards'"
+            :inline="true"
+          />
+          <span class="mx-4">Projects</span>
+        </div>
       </div>
     </router-link>
+    <button
+      v-if="isHiddenMenu"
+      @click="isHiddenMenu = !isHiddenMenu"
+      class="cursor-pointer rounded-lg border-2 border-gray-500 p-2 text-center text-xl font-medium text-teal-500 hover:bg-gray-500 hover:text-orange-400"
+    >
+      <Icon class="w-5" :icon="'flowbite:angle-down-solid'" :inline="true" />
+    </button>
+    <button
+      v-if="!isHiddenMenu"
+      @click="isHiddenMenu = true"
+      class="cursor-pointer rounded-lg border-2 border-gray-500 p-2 text-center text-xl font-medium text-orange-500 hover:bg-gray-500 hover:text-orange-400"
+    >
+      <Icon class="w-5" :icon="'material-symbols:close'" :inline="true" />
+    </button>
+  </div>
 
-    <nav class="mt-2" v-for="project in projects" :key="`${project.id}`">
-      <sidebar-project-item :project="project" />
-    </nav>
+  <div class="overflow-y-auto">
+    <!-- Dropdown menu -->
+    <div
+      v-if="!isHiddenMenu"
+      ref="targetDropDown"
+      id="dropdownMenu"
+      class="z-10 w-full divide-y divide-gray-600 rounded-lg bg-gray-700 shadow"
+    >
+      <nav class="mt-2" v-for="project in projects" :key="`${project.id}`">
+        <sidebar-project-item :project="project" @select-project="handleSelectProject" />
+      </nav>
+    </div>
 
     <div class="mx-6 my-6 border-b-2 border-gray-400"></div>
 
