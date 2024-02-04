@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 import { storeToRefs } from 'pinia'
+import { onClickOutside } from '@vueuse/core'
 import { Icon } from '@iconify/vue'
 import type { ISideMenuItem } from '@/types'
 import { useProjectStore } from '@/stores/project'
@@ -12,6 +13,7 @@ import { getProjectById } from '@/tools/getProjectById'
 const projectStore = useProjectStore()
 const { projects } = storeToRefs(projectStore)
 const isHiddenMenu = ref(true)
+const targetDropDown = ref(null)
 
 let generalMenu: ISideMenuItem[] = reactive([
   {
@@ -40,9 +42,9 @@ let generalMenu: ISideMenuItem[] = reactive([
   }
 ])
 
-const openDropDownMenu = () => {
-  isHiddenMenu.value = !isHiddenMenu.value
-}
+onClickOutside(targetDropDown, () => {
+  isHiddenMenu.value = true
+})
 
 const handleSelectProject = (id: number) => {
   const selectedProject = getProjectById(projects.value, id)
@@ -76,10 +78,18 @@ onMounted(async () => {
       </div>
     </router-link>
     <button
-      @click="openDropDownMenu()"
+      v-if="isHiddenMenu"
+      @click="isHiddenMenu = !isHiddenMenu"
       class="cursor-pointer rounded-lg border-2 border-gray-500 p-2 text-center text-xl font-medium text-teal-500 hover:bg-gray-500 hover:text-orange-400"
     >
       <Icon class="w-5" :icon="'flowbite:angle-down-solid'" :inline="true" />
+    </button>
+    <button
+      v-if="!isHiddenMenu"
+      @click="isHiddenMenu = true"
+      class="cursor-pointer rounded-lg border-2 border-gray-500 p-2 text-center text-xl font-medium text-orange-500 hover:bg-gray-500 hover:text-orange-400"
+    >
+      <Icon class="w-5" :icon="'material-symbols:close'" :inline="true" />
     </button>
   </div>
 
@@ -87,7 +97,8 @@ onMounted(async () => {
     <!-- Dropdown menu -->
     <div
       v-if="!isHiddenMenu"
-      id="dropdownInformation"
+      ref="targetDropDown"
+      id="dropdownMenu"
       class="z-10 w-full divide-y divide-gray-600 rounded-lg bg-gray-700 shadow"
     >
       <nav class="mt-2" v-for="project in projects" :key="`${project.id}`">
