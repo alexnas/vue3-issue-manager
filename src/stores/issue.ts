@@ -4,8 +4,31 @@ import axios from 'axios'
 import type { IIssue } from '@/types'
 import IssueService from '@/services/IssueService'
 
+const initIssue: IIssue = {
+  id: -1,
+  title: '',
+  summary: '',
+  status: 'ToDo',
+  type: 'Task',
+  priority: 'Normal',
+  tags: '',
+  estimate: 4,
+  assigneeId: null,
+  rankId: 1,
+  projectId: -1,
+  creatorId: -1,
+  color: '',
+  className: '',
+  description: '',
+  deadline: '',
+  isActive: true,
+  createdAt: '',
+  updatedAt: ''
+}
+
 export const useIssueStore = defineStore('issue', () => {
   const issues = ref<IIssue[]>([])
+  const currentIssue = ref<IIssue>({ ...initIssue })
 
   const loading = ref<boolean>(false)
   const error = ref<string | null>(null)
@@ -32,5 +55,5 @@ export const useIssueStore = defineStore('issue', () => {
     }
   }
 
-  return { issues, loading, error, getIssues }
+  return { issues, currentIssue, loading, error, getIssues }
 })

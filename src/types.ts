@@ -66,7 +66,7 @@ interface IIssue {
   priority: IIssuePriority // 'Normal' = ['Unimportant', 'Low', 'Normal', 'High', 'Critical', 'UltraCritical']
   tags: string // Example: 'Database,Sql2008',
   estimate: number // estimated time of job (hours) === 4 (in Hours)
-  assigneeId?: number // Example: 'Janet Leverling', finally == assigneeId: number == userId (null when created and is 'ToDo')
+  assigneeId?: number | null // Example: 'Janet Leverling', finally == assigneeId: number == userId (null when created and is 'ToDo')
   rankId: number // 1 == current order in the column
   projectId: number // ProjectId :ForeignKey == Number (id)
   creatorId: number // Example: 'Boss Eduard', ==> finally == creatorId: number == userId

@@ -6,10 +6,14 @@ import type { IIssue, IIssueKeys, IIssueTableCol } from '@/types'
 import { useUserStore } from '@/stores/user'
 import { useProjectStore } from '@/stores/project'
 import { useIssueStore } from '@/stores/issue'
+import { useModalStore } from '@/stores/modal'
 import { formatDateTime } from '@/tools/formatDate'
 import { getUserById } from '@/tools/getUserById'
 import { getProjectById } from '@/tools/getProjectById'
 import AddNewButton from '@/components/shared/AddNewButton.vue'
+import IssueForm from '@/components/issues/IssueForm.vue'
+
+const modalStore = useModalStore()
 
 const userStore = useUserStore()
 const { users } = storeToRefs(userStore)
@@ -47,7 +51,7 @@ const handleSort = (field: IIssueKeys) => {
 }
 
 const handleAddNewClick = () => {
-  alert('Add New Issue')
+  modalStore.openNewItemModal()
 }
 
 const handleViewClick = (issue: IIssue) => {
@@ -163,6 +167,18 @@ watchEffect(() => {
     </table>
   </div>
   <div v-else>Sorry, no entries</div>
+
+  <!-- Issue Modal Form -->
+  <issue-form />
 </template>
 
-<style scoped></style>
+<style scoped>
+.modal {
+  position: fixed;
+  z-index: 999;
+  top: 50%;
+  left: 50%;
+  width: 300px;
+  margin-left: -150px;
+}
+</style>
