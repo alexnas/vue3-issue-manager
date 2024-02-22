@@ -53,20 +53,16 @@ interface IIssueTableCol {
 
 type IIssueKeys = keyof IIssue
 
-type IIssueStatus = 'ToDo' | 'InProgress' | 'Returned' | 'Review' | 'Testing' | 'Done'
-type IIssueType = 'Task' | 'Bag' | 'Feature' | 'Improvement' | 'Other'
-type IIssuePriority = 'Unimportant' | 'Low' | 'Normal' | 'High' | 'Critical' | 'UltraCritical'
-
 interface IIssue {
   id: number // 29004
   title: string // 'Issue - 29004',
   summary: string // Example: 'Fix cannot open user’s default database SQL error.',
-  status: IIssueStatus // 'InProgress' = ['To Do', 'In Progress', 'Returned', 'Review', 'Testing', 'Done']
-  type: IIssueType // 'Task' = ['Task', 'Bag', 'Feature', 'Improvement', 'Other']
-  priority: IIssuePriority // 'Normal' = ['Unimportant', 'Low', 'Normal', 'High', 'Critical', 'UltraCritical']
+  issueStatusId: number | null // issueStatusId == one of issueStatuses for given project
+  issueTypeId: number | null // issueStatusId == one of issueStatuses for given project
+  issuePriorityId: number | null // issueStatusId == one of issueStatuses for given project
   tags: string // Example: 'Database,Sql2008',
   estimate: number // estimated time of job (hours) === 4 (in Hours)
-  assigneeId?: number // Example: 'Janet Leverling', finally == assigneeId: number == userId (null when created and is 'ToDo')
+  assigneeId: number | null // Example: 'Janet Leverling', finally == assigneeId: number == userId (null when created and is 'ToDo')
   rankId: number // 1 == current order in the column
   projectId: number // ProjectId :ForeignKey == Number (id)
   creatorId: number // Example: 'Boss Eduard', ==> finally == creatorId: number == userId
@@ -89,8 +85,5 @@ export type {
   IUserTableCol,
   IIssueTableCol,
   IIssueKeys,
-  IIssueStatus,
-  IIssueType,
-  IIssuePriority,
   IIssue
 }

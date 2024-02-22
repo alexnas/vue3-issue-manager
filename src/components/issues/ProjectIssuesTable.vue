@@ -6,10 +6,14 @@ import type { IIssue, IIssueKeys, IIssueTableCol } from '@/types'
 import { useUserStore } from '@/stores/user'
 import { useProjectStore } from '@/stores/project'
 import { useIssueStore } from '@/stores/issue'
+import { useModalStore } from '@/stores/modal'
 import { formatDateTime } from '@/tools/formatDate'
 import { getUserById } from '@/tools/getUserById'
 import { getProjectById } from '@/tools/getProjectById'
 import AddNewButton from '@/components/shared/AddNewButton.vue'
+import IssueForm from '@/components/issues/IssueForm.vue'
+
+const modalStore = useModalStore()
 
 const userStore = useUserStore()
 const { users } = storeToRefs(userStore)
@@ -18,16 +22,16 @@ const projectStore = useProjectStore()
 const { projects, currentProject } = storeToRefs(projectStore)
 
 const issueStore = useIssueStore()
-const { issues: issues } = storeToRefs(issueStore)
+const { issues } = storeToRefs(issueStore)
 
 const issueTableCols: IIssueTableCol[] = [
   { field: 'id', title: 'ID', position: 1, isVisible: true },
   { field: 'isActive', title: 'ON', position: 1, isVisible: true },
   { field: 'title', title: 'TITLE', position: 1, isVisible: true },
-  { field: 'status', title: 'status', position: 1, isVisible: true },
   { field: 'summary', title: 'summary', position: 1, isVisible: true },
-  { field: 'type', title: 'type', position: 1, isVisible: true },
-  { field: 'priority', title: 'priority', position: 1, isVisible: true },
+  { field: 'issueStatusId', title: 'statusId', position: 1, isVisible: true },
+  { field: 'issueTypeId', title: 'typeId', position: 1, isVisible: true },
+  { field: 'issuePriorityId', title: 'priorityId', position: 1, isVisible: true },
   { field: 'tags', title: 'tags', position: 1, isVisible: true },
   { field: 'estimate', title: 'estimate', position: 1, isVisible: true },
   { field: 'assigneeId', title: 'assignee', position: 1, isVisible: true },
@@ -47,15 +51,20 @@ const handleSort = (field: IIssueKeys) => {
 }
 
 const handleAddNewClick = () => {
-  alert('Add New Issue')
+  issueStore.cancelCurrentIssue()
+  modalStore.openNewItemModal()
 }
 
 const handleViewClick = (issue: IIssue) => {
-  alert(`View Issue title, ${issue.title}`)
+  // alert(`View Issue title, ${issue.title}`)
+  issueStore.setCurrentIssue(issue)
+  modalStore.openViewItemModal()
 }
 
 const handleEditClick = (issue: IIssue) => {
-  alert(`Update Issue title, ${issue.title}`)
+  // alert(`Update Issue title, ${issue.title}`)
+  issueStore.setCurrentIssue(issue)
+  modalStore.openEditItemModal()
 }
 
 const handleDeleteClick = async (issue: IIssue) => {
@@ -93,6 +102,7 @@ watchEffect(() => {
         class="sticky top-0 bg-teal-100 text-xs uppercase text-gray-700 dark:bg-teal-700 dark:text-gray-100"
       >
         <tr>
+          <th scope="col" class="px-4 py-3">Action</th>
           <th scope="col" class="px-4 py-3">#</th>
           <th
             v-for="{ field, title } in issueTableCols"
@@ -103,7 +113,6 @@ watchEffect(() => {
           >
             {{ title }}
           </th>
-          <th scope="col" class="px-4 py-3">Action</th>
         </tr>
       </thead>
       <tbody>
@@ -112,29 +121,6 @@ watchEffect(() => {
           :key="issue.id"
           class="border-b odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-800 even:dark:bg-gray-700"
         >
-          <td class="px-4 py-3">{{ idx + 1 }}</td>
-          <td class="px-4 py-3">{{ issue.id }}</td>
-          <td class="px-4 py-3">
-            <Icon v-if="issue.isActive" icon="mdi:tick" class="text-3xl text-green-400" />
-            <Icon v-else icon="mdi:cancel" class="text-3xl text-red-300" />
-          </td>
-          <td class="px-4 py-3">{{ issue.title }}</td>
-          <td class="px-4 py-3">{{ issue.status }}</td>
-          <td class="px-4 py-3">{{ issue.summary }}</td>
-          <td class="px-4 py-3">{{ issue.type }}</td>
-          <td class="px-4 py-3">{{ issue.priority }}</td>
-          <td class="px-4 py-3">{{ issue.tags }}</td>
-          <td class="px-4 py-3">{{ issue.estimate }}</td>
-          <td class="px-4 py-3">{{ getUserById(users, issue.assigneeId)?.name }}</td>
-          <td class="px-4 py-3">{{ issue.rankId }}</td>
-          <td class="px-4 py-3">{{ getProjectById(projects, issue.projectId)?.title }}</td>
-          <td class="px-4 py-3">{{ getUserById(users, issue.creatorId)?.name }}</td>
-          <td class="px-4 py-3">{{ issue.color }}</td>
-          <td class="px-4 py-3">{{ issue.className }}</td>
-          <td class="px-4 py-3">{{ issue.description }}</td>
-          <td class="px-4 py-3">{{ issue.deadline }}</td>
-          <td class="px-4 py-3">{{ formatDateTime(issue.createdAt) }}</td>
-          <td class="px-4 py-3">{{ formatDateTime(issue.updatedAt) }}</td>
           <td class="flex px-4 py-3">
             <button
               @click.stop="handleViewClick(issue)"
@@ -158,11 +144,48 @@ watchEffect(() => {
               DEL
             </button>
           </td>
+          <td class="px-4 py-3">{{ idx + 1 }}</td>
+          <td class="px-4 py-3">{{ issue.id }}</td>
+          <td class="px-4 py-3">
+            <Icon v-if="issue.isActive" icon="mdi:tick" class="text-3xl text-green-400" />
+            <Icon v-else icon="mdi:cancel" class="text-3xl text-red-300" />
+          </td>
+          <td class="px-4 py-3">{{ issue.title }}</td>
+          <td class="px-4 py-3">{{ issue.summary }}</td>
+          <td class="px-4 py-3">{{ issue.issueStatusId }}</td>
+          <td class="px-4 py-3">{{ issue.issueTypeId }}</td>
+          <td class="px-4 py-3">{{ issue.issuePriorityId }}</td>
+          <td class="px-4 py-3">{{ issue.tags }}</td>
+          <td class="px-4 py-3">{{ issue.estimate }}</td>
+          <td class="px-4 py-3">{{ getUserById(users, issue.assigneeId)?.name }}</td>
+          <td class="px-4 py-3">{{ issue.rankId }}</td>
+          <td class="px-4 py-3">{{ getProjectById(projects, issue.projectId)?.title }}</td>
+          <td class="px-4 py-3">{{ getUserById(users, issue.creatorId)?.name }}</td>
+          <td class="px-4 py-3">{{ issue.color }}</td>
+          <td class="px-4 py-3">{{ issue.className }}</td>
+          <td class="px-4 py-3">{{ issue.description }}</td>
+          <td class="px-4 py-3">{{ issue.deadline }}</td>
+          <td class="px-4 py-3">{{ formatDateTime(issue.createdAt) }}</td>
+          <td class="px-4 py-3">{{ formatDateTime(issue.updatedAt) }}</td>
         </tr>
       </tbody>
     </table>
   </div>
   <div v-else>Sorry, no entries</div>
+
+  <!-- Issue Modal Form -->
+  <issue-form />
+
+  <div></div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.modal {
+  position: fixed;
+  z-index: 999;
+  top: 50%;
+  left: 50%;
+  width: 300px;
+  margin-left: -150px;
+}
+</style>
