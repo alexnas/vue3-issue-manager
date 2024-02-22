@@ -3,14 +3,15 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import type { IIssue } from '@/types'
 import IssueService from '@/services/IssueService'
+import { getCurrentProjectId } from '@/tools/getProjectById'
 
 const initIssue: IIssue = {
   id: -1,
   title: '',
   summary: '',
-  status: 'ToDo',
-  type: 'Task',
-  priority: 'Normal',
+  issueStatusId: null,
+  issueTypeId: null,
+  issuePriorityId: null,
   tags: '',
   estimate: 4,
   assigneeId: null,
@@ -33,13 +34,21 @@ export const useIssueStore = defineStore('issue', () => {
   const loading = ref<boolean>(false)
   const error = ref<string | null>(null)
 
+  const setCurrentIssue = (issue: IIssue) => {
+    currentIssue.value = { ...issue }
+    return currentIssue.value
+  }
+
+  const cancelCurrentIssue = () => {
+    currentIssue.value = { ...initIssue }
+    return currentIssue.value
+  }
+
   const getIssues = async () => {
-    const data = localStorage.getItem('currentProject')
-    const currentProject = data ? JSON.parse(data) : null
-    const queryParams = { projectId: currentProject.id }
+    const currentProjectId = getCurrentProjectId()
     try {
       loading.value = true
-      const { data } = await IssueService.fetchUsers(queryParams)
+      const { data } = await IssueService.fetchUsers(currentProjectId)
       issues.value = data
       loading.value = false
       error.value = null
@@ -55,5 +64,5 @@ export const useIssueStore = defineStore('issue', () => {
     }
   }
 
-  return { issues, currentIssue, loading, error, getIssues }
+  return { issues, currentIssue, loading, error, getIssues, setCurrentIssue, cancelCurrentIssue }
 })
