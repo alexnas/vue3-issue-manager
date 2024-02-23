@@ -75,6 +75,14 @@ interface IIssue {
   updatedAt: string // Date of update
 }
 
+interface IIssueStatus {
+  id: number
+  name: string
+  label: string
+  createdAt: string
+  updatedAt: string
+}
+
 export type {
   INavbarMenuItem,
   ISideMenuItem,
@@ -85,5 +93,6 @@ export type {
   IUserTableCol,
   IIssueTableCol,
   IIssueKeys,
-  IIssue
+  IIssue,
+  IIssueStatus
 }

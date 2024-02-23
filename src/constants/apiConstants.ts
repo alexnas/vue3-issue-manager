@@ -10,3 +10,4 @@ export const REFRESH_ENDPOINT = '/auth/refresh'
 
 export const PROJECT_ENDPOINT = '/project'
 export const ISSUE_ENDPOINT = '/issue'
+export const ISSUE_STATUS_ENDPOINT = '/issue-status'
