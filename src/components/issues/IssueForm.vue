@@ -5,6 +5,8 @@ import { Form as VeeForm, Field as VeeField } from 'vee-validate'
 import { useModalStore } from '@/stores/modal'
 import { useIssueStore } from '@/stores/issue'
 import { useIssueStatusStore } from '@/stores/issueStatus'
+import { useIssueKindStore } from '@/stores/issueKind'
+import { useIssuePriorityStore } from '@/stores/issuePriority'
 import { useUserStore } from '@/stores/user'
 import { useProjectStore } from '@/stores/project'
 import BaseModal from '@/components/modal/BaseModal.vue'
@@ -17,6 +19,10 @@ const issueStore = useIssueStore()
 const { currentIssue } = storeToRefs(issueStore)
 const issueStatusStore = useIssueStatusStore()
 const { issueStatuses } = storeToRefs(issueStatusStore)
+const issueKindStore = useIssueKindStore()
+const { issueKinds } = storeToRefs(issueKindStore)
+const issuePriorityStore = useIssuePriorityStore()
+const { issuePriorities } = storeToRefs(issuePriorityStore)
 const userStore = useUserStore()
 const { users } = storeToRefs(userStore)
 const projectStore = useProjectStore()
@@ -58,11 +64,6 @@ const handleSubmit = async () => {
 
   // issueStore.resetCurrentIssue()
   // modalStore.resetModalState()
-}
-
-const hangleUpdateIsActive = () => {
-  console.log('hangleUpdateIsActive')
-  return
 }
 
 const titleValue = computed(() => {
@@ -190,6 +191,54 @@ const titleValue = computed(() => {
           </VeeField>
           <div class="flex justify-end px-2 text-xs text-red-600">
             {{ errors && errors?.issueStatusId }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label
+            for="issueKindId"
+            class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
+            >Kind</label
+          >
+          <VeeField
+            id="issueKindId"
+            name="issueKindId"
+            as="select"
+            :disabled="isViewItem"
+            v-model="currentIssue.issueKindId"
+            class="mb-5 mt-2 flex h-10 w-full items-center rounded border border-gray-300 bg-white pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
+          >
+            <option value="-1" disabled selected>- Select option -</option>
+            <option v-for="option in issueKinds" :value="option.id" :key="option.id">
+              {{ option.name }}
+            </option>
+          </VeeField>
+          <div class="flex justify-end px-2 text-xs text-red-600">
+            {{ errors && errors?.issueKindId }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label
+            for="issuePriorityId"
+            class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
+            >Priority</label
+          >
+          <VeeField
+            id="issuePriorityId"
+            name="issuePriorityId"
+            as="select"
+            :disabled="isViewItem"
+            v-model="currentIssue.issuePriorityId"
+            class="mb-5 mt-2 flex h-10 w-full items-center rounded border border-gray-300 bg-white pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
+          >
+            <option value="-1" disabled selected>- Select option -</option>
+            <option v-for="option in issuePriorities" :value="option.id" :key="option.id">
+              {{ option.name }}
+            </option>
+          </VeeField>
+          <div class="flex justify-end px-2 text-xs text-red-600">
+            {{ errors && errors?.issuePriorityId }}
           </div>
         </div>
 

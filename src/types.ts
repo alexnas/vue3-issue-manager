@@ -58,7 +58,7 @@ interface IIssue {
   title: string // 'Issue - 29004',
   summary: string // Example: 'Fix cannot open user’s default database SQL error.',
   issueStatusId: number | null // issueStatusId == one of issueStatuses for given project
-  issueTypeId: number | null // issueStatusId == one of issueStatuses for given project
+  issueKindId: number | null // issueStatusId == one of issueStatuses for given project
   issuePriorityId: number | null // issueStatusId == one of issueStatuses for given project
   tags: string // Example: 'Database,Sql2008',
   estimate: number // estimated time of job (hours) === 4 (in Hours)
@@ -83,6 +83,22 @@ interface IIssueStatus {
   updatedAt: string
 }
 
+interface IIssueKind {
+  id: number
+  name: string
+  label: string
+  createdAt: string
+  updatedAt: string
+}
+
+interface IIssuePriority {
+  id: number
+  name: string
+  label: string
+  createdAt: string
+  updatedAt: string
+}
+
 export type {
   INavbarMenuItem,
   ISideMenuItem,
@@ -94,5 +110,7 @@ export type {
   IIssueTableCol,
   IIssueKeys,
   IIssue,
-  IIssueStatus
+  IIssueStatus,
+  IIssueKind,
+  IIssuePriority
 }

@@ -10,7 +10,7 @@ const initIssue: IIssue = {
   title: '',
   summary: '',
   issueStatusId: null,
-  issueTypeId: null,
+  issueKindId: null,
   issuePriorityId: null,
   tags: '',
   estimate: 4,
