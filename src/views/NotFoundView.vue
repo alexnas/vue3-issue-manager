@@ -1,10 +1,14 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import MainViewContainer from '@/views/MainViewContainer.vue'
+const pageTitle = 'Ooops - there is no such page...'
+</script>
 
 <template>
-  <div class="container">
-    <div class="mr-10 mt-5 text-right">
-      <router-link :to="{ path: '/' }" replace>Back to Home</router-link>
+  <main-view-container :pageTitle="pageTitle">
+    <div class="container">
+      <div class="mr-10 mt-5 text-right">
+        <router-link :to="{ path: '/' }" replace>Back to Home</router-link>
+      </div>
     </div>
-    <h1 class="mt-10 text-center text-3xl text-gray-600">Ooops - there is no such page...</h1>
-  </div>
+  </main-view-container>
 </template>

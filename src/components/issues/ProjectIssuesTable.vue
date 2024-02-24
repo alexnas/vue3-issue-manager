@@ -30,7 +30,7 @@ const issueTableCols: IIssueTableCol[] = [
   { field: 'title', title: 'TITLE', position: 1, isVisible: true },
   { field: 'summary', title: 'summary', position: 1, isVisible: true },
   { field: 'issueStatusId', title: 'statusId', position: 1, isVisible: true },
-  { field: 'issueTypeId', title: 'typeId', position: 1, isVisible: true },
+  { field: 'issueKindId', title: 'kindId', position: 1, isVisible: true },
   { field: 'issuePriorityId', title: 'priorityId', position: 1, isVisible: true },
   { field: 'tags', title: 'tags', position: 1, isVisible: true },
   { field: 'estimate', title: 'estimate', position: 1, isVisible: true },
@@ -153,7 +153,7 @@ watchEffect(() => {
           <td class="px-4 py-3">{{ issue.title }}</td>
           <td class="px-4 py-3">{{ issue.summary }}</td>
           <td class="px-4 py-3">{{ issue.issueStatusId }}</td>
-          <td class="px-4 py-3">{{ issue.issueTypeId }}</td>
+          <td class="px-4 py-3">{{ issue.issueKindId }}</td>
           <td class="px-4 py-3">{{ issue.issuePriorityId }}</td>
           <td class="px-4 py-3">{{ issue.tags }}</td>
           <td class="px-4 py-3">{{ issue.estimate }}</td>
