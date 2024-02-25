@@ -12,6 +12,7 @@ import { useProjectStore } from '@/stores/project'
 import BaseModal from '@/components/modal/BaseModal.vue'
 import issueFormSchemaYup from '@/components/issues/issueFormSchemaYup'
 import CustomCheckbox from '@/components/issues/CustomCheckbox.vue'
+import { formatDateTime } from '@/tools/formatDate'
 
 const modalStore = useModalStore()
 const { isNewItem, isViewItem } = storeToRefs(modalStore)
@@ -78,10 +79,8 @@ const titleValue = computed(() => {
 <template>
   <base-modal @close-modal="closeModal" :modalTitle="modalTitle">
     <VeeForm :validation-schema="issueFormSchemaYup" v-slot="{ errors, meta }">
-      <div class="mb-3 text-amber-400">ERRROS: {{ errors }}</div>
-
-      <div class="mb-3 text-amber-400">
-        <pre>{{ currentIssue.summary }}</pre>
+      <div v-if="!meta.valid" class="mb-3 flex justify-end text-amber-400">
+        Fill all fields and handle SUBMIT button
       </div>
 
       <div
@@ -91,7 +90,7 @@ const titleValue = computed(() => {
           <label
             for="project"
             class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
-            >project</label
+            >Project *</label
           >
           <VeeField
             autocomplete="off"
@@ -112,7 +111,7 @@ const titleValue = computed(() => {
           <label
             for="title"
             class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
-            >Title</label
+            >Title *</label
           >
           <VeeField
             autocomplete="off"
@@ -133,7 +132,7 @@ const titleValue = computed(() => {
           <label
             for="summary"
             class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
-            >summary</label
+            >Summary *</label
           >
           <VeeField
             autocomplete="off"
@@ -147,6 +146,111 @@ const titleValue = computed(() => {
           />
           <div class="flex justify-end px-2 text-xs text-red-600">
             {{ errors && errors?.summary }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label
+            for="tags"
+            class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
+            >Tags</label
+          >
+          <VeeField
+            autocomplete="off"
+            id="tags"
+            name="tags"
+            type="text"
+            v-model="currentIssue.tags"
+            :disabled="isViewItem"
+            class="mb-1 mt-1 flex h-10 w-full items-center rounded border border-gray-300 pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
+            placeholder="Tags"
+          />
+          <div class="flex justify-end px-2 text-xs text-red-600">
+            {{ errors && errors?.tags }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label
+            for="estimate"
+            class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
+            >Estimate</label
+          >
+          <VeeField
+            autocomplete="off"
+            id="estimate"
+            name="estimate"
+            type="number"
+            v-model="currentIssue.estimate"
+            :disabled="isViewItem"
+            class="mb-1 mt-1 flex h-10 w-full items-center rounded border border-gray-300 pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
+            placeholder="estimate"
+          />
+          <div class="flex justify-end px-2 text-xs text-red-600">
+            {{ errors && errors?.estimate }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label
+            for="rankId"
+            class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
+            >RankId</label
+          >
+          <VeeField
+            autocomplete="off"
+            id="rankId"
+            name="rankId"
+            type="number"
+            v-model="currentIssue.rankId"
+            :disabled="isViewItem"
+            class="mb-1 mt-1 flex h-10 w-full items-center rounded border border-gray-300 pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
+            placeholder="rankId"
+          />
+          <div class="flex justify-end px-2 text-xs text-red-600">
+            {{ errors && errors?.rankId }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label
+            for="color"
+            class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
+            >Color</label
+          >
+          <VeeField
+            autocomplete="off"
+            id="color"
+            name="color"
+            type="text"
+            v-model="currentIssue.color"
+            :disabled="isViewItem"
+            class="mb-1 mt-1 flex h-10 w-full items-center rounded border border-gray-300 pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
+            placeholder="color"
+          />
+          <div class="flex justify-end px-2 text-xs text-red-600">
+            {{ errors && errors?.color }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label
+            for="className"
+            class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
+            >ClassName</label
+          >
+          <VeeField
+            autocomplete="off"
+            id="className"
+            name="className"
+            type="text"
+            v-model="currentIssue.className"
+            :disabled="isViewItem"
+            class="mb-1 mt-1 flex h-10 w-full items-center rounded border border-gray-300 pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
+            placeholder="className"
+          />
+          <div class="flex justify-end px-2 text-xs text-red-600">
+            {{ errors && errors?.className }}
           </div>
         </div>
 
@@ -174,7 +278,7 @@ const titleValue = computed(() => {
           <label
             for="issueStatusId"
             class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
-            >Status</label
+            >Status *</label
           >
           <VeeField
             id="issueStatusId"
@@ -198,7 +302,7 @@ const titleValue = computed(() => {
           <label
             for="issueKindId"
             class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
-            >Kind</label
+            >Kind *</label
           >
           <VeeField
             id="issueKindId"
@@ -222,7 +326,7 @@ const titleValue = computed(() => {
           <label
             for="issuePriorityId"
             class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
-            >Priority</label
+            >Priority *</label
           >
           <VeeField
             id="issuePriorityId"
@@ -246,7 +350,7 @@ const titleValue = computed(() => {
           <label
             for="creatorId"
             class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
-            >Creator</label
+            >Creator *</label
           >
           <VeeField
             id="creatorId"
@@ -292,6 +396,55 @@ const titleValue = computed(() => {
 
         <div class="mb-3">
           <label
+            for="deadline"
+            class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
+            >deadline</label
+          >
+          <VeeField
+            autocomplete="off"
+            id="deadline"
+            name="deadline"
+            type="text"
+            v-model="currentIssue.deadline"
+            :disabled="isViewItem"
+            class="mb-1 mt-1 flex h-10 w-full items-center rounded border border-gray-300 pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
+            placeholder="deadline"
+          />
+          <div class="flex justify-end px-2 text-xs text-red-600">
+            {{ errors && errors?.deadline }}
+          </div>
+        </div>
+
+        <div v-if="!isNewItem" class="mb-3">
+          <label
+            class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
+            >Created</label
+          >
+          <input
+            name="createdAt"
+            :value="formatDateTime(currentIssue.createdAt)"
+            readonly
+            class="mb-1 mt-1 flex h-10 w-full items-center rounded border border-gray-300 pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
+            placeholder="Date of creation"
+          />
+        </div>
+
+        <div v-if="!isNewItem" class="mb-3">
+          <label
+            class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
+            >Updated</label
+          >
+          <input
+            name="updatedAt"
+            :value="formatDateTime(currentIssue.updatedAt)"
+            readonly
+            class="mb-1 mt-1 flex h-10 w-full items-center rounded border border-gray-300 pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
+            placeholder="Date of update"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label
             class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
             >Is Active
           </label>
@@ -323,7 +476,7 @@ const titleValue = computed(() => {
             :disabled="!meta.valid"
             class="px-8 py-2 text-sm text-white transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2 enabled:bg-teal-700 enabled:hover:bg-teal-600 disabled:bg-gray-400 sm:rounded-lg"
             type="submit"
-            @click.prevent="handleSubmit"
+            @click.prevent="meta.valid && handleSubmit"
           >
             Submit
           </button>
