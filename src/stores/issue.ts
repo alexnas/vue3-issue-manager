@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import type { IIssue } from '@/types'
@@ -31,9 +31,23 @@ export const useIssueStore = defineStore('issue', () => {
   const issues = ref<IIssue[]>([])
   const currentIssue = ref<IIssue>({ ...initIssue })
   const preEditedIssue = ref<IIssue>({ ...initIssue })
-
   const loading = ref<boolean>(false)
   const error = ref<string | null>(null)
+  const filterStr = ref<string>('')
+
+  const filteredIssues = computed(() => {
+    const filtered = issues.value.filter((item) => {
+      if (filterStr.value.trim() === '') return true
+      const isFound =
+        item.title.toLowerCase().indexOf(filterStr.value.toLowerCase()) >= 0 ||
+        item.summary.toLowerCase().indexOf(filterStr.value.toLowerCase()) >= 0 ||
+        (item.description &&
+          item.description.toLowerCase().indexOf(filterStr.value.toLowerCase()) >= 0)
+
+      return isFound
+    })
+    return filtered
+  })
 
   const setCurrentIssue = (issue: IIssue) => {
     currentIssue.value = { ...issue }
@@ -191,6 +205,8 @@ export const useIssueStore = defineStore('issue', () => {
     preEditedIssue,
     loading,
     error,
+    filterStr,
+    filteredIssues,
     getIssues,
     createIssue,
     getOneIssueById,

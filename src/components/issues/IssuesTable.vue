@@ -11,6 +11,7 @@ import { formatDateTime } from '@/tools/formatDate'
 import { getUserById } from '@/tools/getUserById'
 import { getProjectById } from '@/tools/getProjectById'
 import AddNewButton from '@/components/shared/AddNewButton.vue'
+import FilterInput from '@/components/shared/FilterInput.vue'
 import IssueForm from '@/components/issues/IssueForm.vue'
 
 const modalStore = useModalStore()
@@ -22,7 +23,7 @@ const projectStore = useProjectStore()
 const { projects, currentProject } = storeToRefs(projectStore)
 
 const issueStore = useIssueStore()
-const { issues } = storeToRefs(issueStore)
+const { issues, filterStr, filteredIssues } = storeToRefs(issueStore)
 
 const issueTableCols: IIssueTableCol[] = [
   { field: 'id', title: 'ID', position: 1, isVisible: true },
@@ -83,17 +84,13 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="pl-2">Totally: {{ issues.length }} issues.</div>
+  <div class="pl-2">Totally: {{ issues.length }} === Filtered: {{ filteredIssues.length }}</div>
   <div
     class="mb-2 mt-0 flex h-12 max-h-12 w-auto items-center justify-end gap-8 text-gray-600 dark:text-gray-200 lg:-mt-6"
   >
     <div class="flex gap-3 pl-2">
       <div class="text-md flex items-center">Filter</div>
-      <input
-        class="w-full max-w-72 rounded-sm border-2 border-gray-400 bg-gray-300 p-1 text-gray-600 dark:bg-gray-300"
-        type="text"
-        placeholder="Filter"
-      />
+      <FilterInput v-model="filterStr" />
     </div>
     <AddNewButton @openAddNew="handleAddNewClick()" />
   </div>
@@ -122,7 +119,7 @@ watchEffect(() => {
       </thead>
       <tbody>
         <tr
-          v-for="(issue, idx) in issues"
+          v-for="(issue, idx) in filteredIssues"
           :key="issue.id"
           class="border-b odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-800 even:dark:bg-gray-700"
         >
