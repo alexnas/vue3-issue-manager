@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
 import { Form as VeeForm, Field as VeeField } from 'vee-validate'
 import { useModalStore } from '@/stores/modal'
@@ -36,43 +36,37 @@ const modalTitle = computed(() => {
 })
 
 const closeModal = () => {
-  // issueStore.resetCurrentIssue()
+  issueStore.resetCurrentIssue()
   modalStore.resetModalState()
 }
 
 const resetModalForm = () => {
-  alert(JSON.stringify(currentIssue.value, null, 2))
-  // issueStore.resetPreEditedIssue()
+  issueStore.resetPreEditedIssue()
 }
 
 const handleEditClick = () => {
-  alert(JSON.stringify(currentIssue.value, null, 2))
-  // console.log(currentIssue.value)
-
   issueStore.setCurrentIssue(currentIssue.value)
   modalStore.openEditItemModal()
 }
 
 const handleSubmit = async () => {
-  alert(JSON.stringify(currentIssue.value, null, 2))
-  // console.log(currentIssue.value)
-
   if (isNewItem.value) {
-    //   await issueStore.createIssue(currentIssue.value)
+    await issueStore.createIssue(currentIssue.value)
   } else {
-    //   await issueStore.updateIssue(currentIssue.value)
+    console.log('updateIssue', currentIssue.value)
+    await issueStore.updateIssue(currentIssue.value)
   }
 
-  // issueStore.resetCurrentIssue()
-  // modalStore.resetModalState()
+  issueStore.resetCurrentIssue()
+  modalStore.resetModalState()
 }
 
-const titleValue = computed(() => {
-  const currentProjectId = currentProject.value?.id || 0
-  const dateNow = Number(new Date())
-  return isNewItem.value
-    ? `TASK-${currentProjectId}-${dateNow}`
-    : `${currentIssue.value.title} (#${currentIssue.value.id})`
+watchEffect(() => {
+  if (isNewItem.value) {
+    const currentProjectId = currentProject.value?.id || 0
+    const dateNow = Number(new Date())
+    currentIssue.value.title = `TASK-${currentProjectId}-${dateNow}`
+  }
 })
 </script>
 
@@ -118,7 +112,7 @@ const titleValue = computed(() => {
             id="title"
             name="title"
             type="text"
-            v-model="titleValue"
+            v-model="currentIssue.title"
             disabled
             class="mb-1 mt-1 flex h-10 w-full items-center rounded border border-gray-300 pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
             placeholder="Issue title"
@@ -476,7 +470,7 @@ const titleValue = computed(() => {
             :disabled="!meta.valid"
             class="px-8 py-2 text-sm text-white transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2 enabled:bg-teal-700 enabled:hover:bg-teal-600 disabled:bg-gray-400 sm:rounded-lg"
             type="submit"
-            @click.prevent="meta.valid && handleSubmit"
+            @click.prevent="handleSubmit"
           >
             Submit
           </button>
@@ -488,7 +482,7 @@ const titleValue = computed(() => {
             Cancel
           </button>
 
-          <div class="invisible ml-auto sm:visible">
+          <div class="ml-auto">
             <button
               class="ml-3 border bg-gray-500 px-8 py-2 text-sm text-gray-100 transition duration-150 ease-in-out hover:border-gray-400 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 sm:rounded-lg"
               @click.prevent="resetModalForm"

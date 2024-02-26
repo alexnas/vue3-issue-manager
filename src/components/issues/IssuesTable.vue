@@ -51,24 +51,29 @@ const handleSort = (field: IIssueKeys) => {
 }
 
 const handleAddNewClick = () => {
-  issueStore.cancelCurrentIssue()
+  issueStore.resetCurrentIssue()
   modalStore.openNewItemModal()
 }
 
 const handleViewClick = (issue: IIssue) => {
-  // alert(`View Issue title, ${issue.title}`)
   issueStore.setCurrentIssue(issue)
+  issueStore.setPreEditedIssue(issue)
   modalStore.openViewItemModal()
 }
 
 const handleEditClick = (issue: IIssue) => {
-  // alert(`Update Issue title, ${issue.title}`)
   issueStore.setCurrentIssue(issue)
+  issueStore.setPreEditedIssue(issue)
   modalStore.openEditItemModal()
 }
 
 const handleDeleteClick = async (issue: IIssue) => {
-  alert(`Delete Issue title, ${issue.title}`)
+  const { id, title } = issue
+  const confirmed = confirm(`Are you sure to delete all data for the issue #${id} "${title}"?`)
+  if (confirmed) {
+    await issueStore.deleteIssue(issue)
+  }
+  modalStore.resetModalState()
 }
 
 watchEffect(() => {

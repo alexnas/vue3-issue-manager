@@ -30,6 +30,7 @@ const initIssue: IIssue = {
 export const useIssueStore = defineStore('issue', () => {
   const issues = ref<IIssue[]>([])
   const currentIssue = ref<IIssue>({ ...initIssue })
+  const preEditedIssue = ref<IIssue>({ ...initIssue })
 
   const loading = ref<boolean>(false)
   const error = ref<string | null>(null)
@@ -39,16 +40,31 @@ export const useIssueStore = defineStore('issue', () => {
     return currentIssue.value
   }
 
-  const cancelCurrentIssue = () => {
+  const resetCurrentIssue = () => {
+    preEditedIssue.value = { ...initIssue }
     currentIssue.value = { ...initIssue }
     return currentIssue.value
   }
 
+  const cancelPreEditedIssue = () => {
+    preEditedIssue.value = { ...initIssue }
+  }
+
+  const resetPreEditedIssue = () => {
+    currentIssue.value = { ...preEditedIssue.value }
+  }
+
+  const setPreEditedIssue = (issue: IIssue) => {
+    preEditedIssue.value = { ...issue }
+    return preEditedIssue.value
+  }
+
   const getIssues = async () => {
-    const currentProjectId = getCurrentProjectId()
+    const projectId = getCurrentProjectId()
+
     try {
       loading.value = true
-      const { data } = await IssueService.fetchUsers(currentProjectId)
+      const { data } = await IssueService.fetchIssuesService(projectId)
       issues.value = data
       loading.value = false
       error.value = null
@@ -64,5 +80,126 @@ export const useIssueStore = defineStore('issue', () => {
     }
   }
 
-  return { issues, currentIssue, loading, error, getIssues, setCurrentIssue, cancelCurrentIssue }
+  const getOneIssueById = async (id: number) => {
+    const projectId = getCurrentProjectId()
+
+    try {
+      loading.value = true
+      const { data } = await IssueService.fetchOneIssueService(projectId, id)
+      if (data) {
+        currentIssue.value = data
+      }
+      loading.value = false
+      error.value = null
+    } catch (err: any) {
+      loading.value = false
+      if (axios.isAxiosError(error)) {
+        error.value = err.message
+        console.log('Error', err.message)
+      } else {
+        error.value = 'Unexpected error encountered'
+        console.log('Error', err)
+      }
+    }
+  }
+
+  const createIssue = async (issueItem: IIssue) => {
+    const projectId = getCurrentProjectId()
+    const idx = issues.value.findIndex((item) => item.title === issueItem.title)
+    if (idx >= 0) {
+      console.log(`Error: There is already such user instance with title=${issueItem.title}`)
+      throw Error(`There is already such user instance with email=${issueItem.title}`)
+    }
+    const params = { ...issueItem }
+
+    try {
+      loading.value = true
+      const { data } = await IssueService.createIssueService(projectId, params)
+      if (data) {
+        issues.value.push(data)
+      }
+      loading.value = false
+      error.value = null
+    } catch (err: any) {
+      loading.value = false
+      if (axios.isAxiosError(error)) {
+        error.value = err.message
+        console.log('Error', err.message)
+      } else {
+        error.value = 'Unexpected error encountered'
+        console.log('Error', err)
+      }
+    }
+  }
+
+  const updateIssue = async (issueItem: IIssue) => {
+    const id = issueItem.id
+    const idx = issues.value.findIndex((item) => item.id === id)
+    if (idx === -1) {
+      console.log(`Error: There is no such issue instance with id=${id}`)
+      throw Error(`There is no such issue instance with id=${id}`)
+    }
+
+    const projectId = getCurrentProjectId()
+    const params = { ...issueItem }
+
+    try {
+      loading.value = true
+      const { data } = await IssueService.updateIssueService(projectId, id, params)
+      if (data) {
+        issues.value[idx] = data
+      }
+      loading.value = false
+      error.value = null
+    } catch (err: any) {
+      loading.value = false
+      if (axios.isAxiosError(error)) {
+        error.value = err.message
+        console.log('Error', err.message)
+      } else {
+        error.value = 'Unexpected error encountered'
+        console.log('Error', err)
+      }
+    }
+  }
+
+  const deleteIssue = async (issueItem: IIssue) => {
+    const projectId = getCurrentProjectId()
+    const issueId = issueItem.id
+
+    try {
+      loading.value = true
+      const { data } = await IssueService.deleteIssueService(projectId, issueId)
+      issues.value = issues.value.filter((item) => +item.id !== +data)
+      loading.value = false
+      error.value = null
+    } catch (err: any) {
+      loading.value = false
+      if (axios.isAxiosError(error)) {
+        error.value = err.message
+        console.log('Error', err.message)
+      } else {
+        error.value = 'Unexpected error encountered'
+        console.log('Error', err)
+      }
+    }
+  }
+
+  return {
+    issues,
+    currentIssue,
+    preEditedIssue,
+    loading,
+    error,
+    getIssues,
+    createIssue,
+    getOneIssueById,
+    updateIssue,
+    deleteIssue,
+    setCurrentIssue,
+    resetCurrentIssue,
+    cancelPreEditedIssue,
+    resetPreEditedIssue,
+    setPreEditedIssue
+  }
 })
