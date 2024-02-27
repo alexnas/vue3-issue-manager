@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watchEffect } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
 import { Icon } from '@iconify/vue'
 import type { IIssue, IIssueKeys, IIssueTableCol } from '@/types'
@@ -7,22 +7,30 @@ import { useUserStore } from '@/stores/user'
 import { useProjectStore } from '@/stores/project'
 import { useIssueStore } from '@/stores/issue'
 import { useModalStore } from '@/stores/modal'
+import { useIssueStatusStore } from '@/stores/issueStatus'
+import { useIssueKindStore } from '@/stores/issueKind'
+import { useIssuePriorityStore } from '@/stores/issuePriority'
 import { formatDateTime } from '@/tools/formatDate'
-import { getUserById } from '@/tools/getUserById'
-import { getProjectById } from '@/tools/getProjectById'
-import AddNewButton from '@/components/shared/AddNewButton.vue'
+import { getItemById } from '@/tools/getById'
 import IssueForm from '@/components/issues/IssueForm.vue'
+import AddNewButton from '@/components/shared/AddNewButton.vue'
+import FilterInput from '@/components/shared/FilterInput.vue'
+import { arrowUpIcon, arrowDownIcon } from '@/constants/icons'
 
 const modalStore = useModalStore()
-
 const userStore = useUserStore()
 const { users } = storeToRefs(userStore)
-
 const projectStore = useProjectStore()
 const { projects, currentProject } = storeToRefs(projectStore)
-
 const issueStore = useIssueStore()
-const { issues } = storeToRefs(issueStore)
+const { issues, filterStr, filteredIssues, sortProperty, sortOrder, sortedIssues } =
+  storeToRefs(issueStore)
+const issueStatusStore = useIssueStatusStore()
+const { issueStatuses } = storeToRefs(issueStatusStore)
+const issueKindStore = useIssueKindStore()
+const { issueKinds } = storeToRefs(issueKindStore)
+const issuePriorityStore = useIssuePriorityStore()
+const { issuePriorities } = storeToRefs(issuePriorityStore)
 
 const issueTableCols: IIssueTableCol[] = [
   { field: 'id', title: 'ID', position: 1, isVisible: true },
@@ -46,29 +54,43 @@ const issueTableCols: IIssueTableCol[] = [
   { field: 'updatedAt', title: 'UPDATED', position: 1, isVisible: true }
 ]
 
-const handleSort = (field: IIssueKeys) => {
-  alert(`Handle sort, ${field}`)
+const sortIcon = computed(() => {
+  return sortOrder.value === 'asc' ? arrowUpIcon : arrowDownIcon
+})
+
+const handleSort = (property: IIssueKeys) => {
+  if (sortProperty.value === property) {
+    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    sortProperty.value = property
+    sortOrder.value = 'asc'
+  }
 }
 
 const handleAddNewClick = () => {
-  issueStore.cancelCurrentIssue()
+  issueStore.resetCurrentIssue()
   modalStore.openNewItemModal()
 }
 
 const handleViewClick = (issue: IIssue) => {
-  // alert(`View Issue title, ${issue.title}`)
   issueStore.setCurrentIssue(issue)
+  issueStore.setPreEditedIssue(issue)
   modalStore.openViewItemModal()
 }
 
 const handleEditClick = (issue: IIssue) => {
-  // alert(`Update Issue title, ${issue.title}`)
   issueStore.setCurrentIssue(issue)
+  issueStore.setPreEditedIssue(issue)
   modalStore.openEditItemModal()
 }
 
 const handleDeleteClick = async (issue: IIssue) => {
-  alert(`Delete Issue title, ${issue.title}`)
+  const { id, title } = issue
+  const confirmed = confirm(`Are you sure to delete all data for the issue #${id} "${title}"?`)
+  if (confirmed) {
+    await issueStore.deleteIssue(issue)
+  }
+  modalStore.resetModalState()
 }
 
 watchEffect(() => {
@@ -78,17 +100,13 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="pl-2">Totally: {{ issues.length }} issues.</div>
+  <div class="pl-2">Totally: {{ issues.length }} === Filtered: {{ filteredIssues.length }}</div>
   <div
     class="mb-2 mt-0 flex h-12 max-h-12 w-auto items-center justify-end gap-8 text-gray-600 dark:text-gray-200 lg:-mt-6"
   >
     <div class="flex gap-3 pl-2">
       <div class="text-md flex items-center">Filter</div>
-      <input
-        class="w-full max-w-72 rounded-sm border-2 border-gray-400 bg-gray-300 p-1 text-gray-600 dark:bg-gray-300"
-        type="text"
-        placeholder="Filter"
-      />
+      <FilterInput v-model="filterStr" />
     </div>
     <AddNewButton @openAddNew="handleAddNewClick()" />
   </div>
@@ -112,12 +130,13 @@ watchEffect(() => {
             @click="handleSort(field)"
           >
             {{ title }}
+            <span class="" v-if="sortProperty === field">{{ sortIcon }}</span>
           </th>
         </tr>
       </thead>
       <tbody>
         <tr
-          v-for="(issue, idx) in issues"
+          v-for="(issue, idx) in sortedIssues"
           :key="issue.id"
           class="border-b odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-800 even:dark:bg-gray-700"
         >
@@ -152,15 +171,27 @@ watchEffect(() => {
           </td>
           <td class="px-4 py-3">{{ issue.title }}</td>
           <td class="px-4 py-3">{{ issue.summary }}</td>
-          <td class="px-4 py-3">{{ issue.issueStatusId }}</td>
-          <td class="px-4 py-3">{{ issue.issueKindId }}</td>
-          <td class="px-4 py-3">{{ issue.issuePriorityId }}</td>
+          <td class="px-4 py-3">
+            {{ issue.issueStatusId && getItemById(issueStatuses, issue.issueStatusId)?.name }}
+          </td>
+          <td class="px-4 py-3">
+            {{ issue.issueKindId && getItemById(issueKinds, issue.issueKindId)?.name }}
+          </td>
+          <td class="px-4 py-3">
+            {{ issue.issuePriorityId && getItemById(issuePriorities, issue.issuePriorityId)?.name }}
+          </td>
           <td class="px-4 py-3">{{ issue.tags }}</td>
           <td class="px-4 py-3">{{ issue.estimate }}</td>
-          <td class="px-4 py-3">{{ getUserById(users, issue.assigneeId)?.name }}</td>
+          <td class="px-4 py-3">
+            {{ issue.assigneeId && getItemById(users, issue.assigneeId)?.name }}
+          </td>
           <td class="px-4 py-3">{{ issue.rankId }}</td>
-          <td class="px-4 py-3">{{ getProjectById(projects, issue.projectId)?.title }}</td>
-          <td class="px-4 py-3">{{ getUserById(users, issue.creatorId)?.name }}</td>
+          <td class="px-4 py-3">
+            {{ issue.projectId && getItemById(projects, issue.projectId)?.title }}
+          </td>
+          <td class="px-4 py-3">
+            {{ issue.creatorId && getItemById(users, issue.creatorId)?.name }}
+          </td>
           <td class="px-4 py-3">{{ issue.color }}</td>
           <td class="px-4 py-3">{{ issue.className }}</td>
           <td class="px-4 py-3">{{ issue.description }}</td>

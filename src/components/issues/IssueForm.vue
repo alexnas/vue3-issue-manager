@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
 import { Form as VeeForm, Field as VeeField } from 'vee-validate'
 import { useModalStore } from '@/stores/modal'
@@ -12,6 +12,7 @@ import { useProjectStore } from '@/stores/project'
 import BaseModal from '@/components/modal/BaseModal.vue'
 import issueFormSchemaYup from '@/components/issues/issueFormSchemaYup'
 import CustomCheckbox from '@/components/issues/CustomCheckbox.vue'
+import { formatDateTime } from '@/tools/formatDate'
 
 const modalStore = useModalStore()
 const { isNewItem, isViewItem } = storeToRefs(modalStore)
@@ -35,53 +36,45 @@ const modalTitle = computed(() => {
 })
 
 const closeModal = () => {
-  // issueStore.resetCurrentIssue()
+  issueStore.resetCurrentIssue()
   modalStore.resetModalState()
 }
 
 const resetModalForm = () => {
-  alert(JSON.stringify(currentIssue.value, null, 2))
-  // issueStore.resetPreEditedIssue()
+  issueStore.resetPreEditedIssue()
 }
 
 const handleEditClick = () => {
-  alert(JSON.stringify(currentIssue.value, null, 2))
-  // console.log(currentIssue.value)
-
   issueStore.setCurrentIssue(currentIssue.value)
   modalStore.openEditItemModal()
 }
 
 const handleSubmit = async () => {
-  alert(JSON.stringify(currentIssue.value, null, 2))
-  // console.log(currentIssue.value)
-
   if (isNewItem.value) {
-    //   await issueStore.createIssue(currentIssue.value)
+    await issueStore.createIssue(currentIssue.value)
   } else {
-    //   await issueStore.updateIssue(currentIssue.value)
+    console.log('updateIssue', currentIssue.value)
+    await issueStore.updateIssue(currentIssue.value)
   }
 
-  // issueStore.resetCurrentIssue()
-  // modalStore.resetModalState()
+  issueStore.resetCurrentIssue()
+  modalStore.resetModalState()
 }
 
-const titleValue = computed(() => {
-  const currentProjectId = currentProject.value?.id || 0
-  const dateNow = Number(new Date())
-  return isNewItem.value
-    ? `TASK-${currentProjectId}-${dateNow}`
-    : `${currentIssue.value.title} (#${currentIssue.value.id})`
+watchEffect(() => {
+  if (isNewItem.value) {
+    const currentProjectId = currentProject.value?.id || 0
+    const dateNow = Number(new Date())
+    currentIssue.value.title = `TASK-${currentProjectId}-${dateNow}`
+  }
 })
 </script>
 
 <template>
   <base-modal @close-modal="closeModal" :modalTitle="modalTitle">
     <VeeForm :validation-schema="issueFormSchemaYup" v-slot="{ errors, meta }">
-      <div class="mb-3 text-amber-400">ERRROS: {{ errors }}</div>
-
-      <div class="mb-3 text-amber-400">
-        <pre>{{ currentIssue.summary }}</pre>
+      <div v-if="!meta.valid" class="mb-3 flex justify-end text-amber-400">
+        Fill all fields and handle SUBMIT button
       </div>
 
       <div
@@ -91,7 +84,7 @@ const titleValue = computed(() => {
           <label
             for="project"
             class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
-            >project</label
+            >Project *</label
           >
           <VeeField
             autocomplete="off"
@@ -112,14 +105,14 @@ const titleValue = computed(() => {
           <label
             for="title"
             class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
-            >Title</label
+            >Title *</label
           >
           <VeeField
             autocomplete="off"
             id="title"
             name="title"
             type="text"
-            v-model="titleValue"
+            v-model="currentIssue.title"
             disabled
             class="mb-1 mt-1 flex h-10 w-full items-center rounded border border-gray-300 pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
             placeholder="Issue title"
@@ -133,7 +126,7 @@ const titleValue = computed(() => {
           <label
             for="summary"
             class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
-            >summary</label
+            >Summary *</label
           >
           <VeeField
             autocomplete="off"
@@ -147,6 +140,111 @@ const titleValue = computed(() => {
           />
           <div class="flex justify-end px-2 text-xs text-red-600">
             {{ errors && errors?.summary }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label
+            for="tags"
+            class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
+            >Tags</label
+          >
+          <VeeField
+            autocomplete="off"
+            id="tags"
+            name="tags"
+            type="text"
+            v-model="currentIssue.tags"
+            :disabled="isViewItem"
+            class="mb-1 mt-1 flex h-10 w-full items-center rounded border border-gray-300 pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
+            placeholder="Tags"
+          />
+          <div class="flex justify-end px-2 text-xs text-red-600">
+            {{ errors && errors?.tags }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label
+            for="estimate"
+            class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
+            >Estimate</label
+          >
+          <VeeField
+            autocomplete="off"
+            id="estimate"
+            name="estimate"
+            type="number"
+            v-model="currentIssue.estimate"
+            :disabled="isViewItem"
+            class="mb-1 mt-1 flex h-10 w-full items-center rounded border border-gray-300 pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
+            placeholder="estimate"
+          />
+          <div class="flex justify-end px-2 text-xs text-red-600">
+            {{ errors && errors?.estimate }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label
+            for="rankId"
+            class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
+            >RankId</label
+          >
+          <VeeField
+            autocomplete="off"
+            id="rankId"
+            name="rankId"
+            type="number"
+            v-model="currentIssue.rankId"
+            :disabled="isViewItem"
+            class="mb-1 mt-1 flex h-10 w-full items-center rounded border border-gray-300 pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
+            placeholder="rankId"
+          />
+          <div class="flex justify-end px-2 text-xs text-red-600">
+            {{ errors && errors?.rankId }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label
+            for="color"
+            class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
+            >Color</label
+          >
+          <VeeField
+            autocomplete="off"
+            id="color"
+            name="color"
+            type="text"
+            v-model="currentIssue.color"
+            :disabled="isViewItem"
+            class="mb-1 mt-1 flex h-10 w-full items-center rounded border border-gray-300 pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
+            placeholder="color"
+          />
+          <div class="flex justify-end px-2 text-xs text-red-600">
+            {{ errors && errors?.color }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label
+            for="className"
+            class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
+            >ClassName</label
+          >
+          <VeeField
+            autocomplete="off"
+            id="className"
+            name="className"
+            type="text"
+            v-model="currentIssue.className"
+            :disabled="isViewItem"
+            class="mb-1 mt-1 flex h-10 w-full items-center rounded border border-gray-300 pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
+            placeholder="className"
+          />
+          <div class="flex justify-end px-2 text-xs text-red-600">
+            {{ errors && errors?.className }}
           </div>
         </div>
 
@@ -174,7 +272,7 @@ const titleValue = computed(() => {
           <label
             for="issueStatusId"
             class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
-            >Status</label
+            >Status *</label
           >
           <VeeField
             id="issueStatusId"
@@ -198,7 +296,7 @@ const titleValue = computed(() => {
           <label
             for="issueKindId"
             class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
-            >Kind</label
+            >Kind *</label
           >
           <VeeField
             id="issueKindId"
@@ -222,7 +320,7 @@ const titleValue = computed(() => {
           <label
             for="issuePriorityId"
             class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
-            >Priority</label
+            >Priority *</label
           >
           <VeeField
             id="issuePriorityId"
@@ -246,7 +344,7 @@ const titleValue = computed(() => {
           <label
             for="creatorId"
             class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
-            >Creator</label
+            >Creator *</label
           >
           <VeeField
             id="creatorId"
@@ -288,6 +386,55 @@ const titleValue = computed(() => {
           <div class="flex justify-end px-2 text-xs text-red-600">
             {{ errors && errors?.assigneeId }}
           </div>
+        </div>
+
+        <div class="mb-3">
+          <label
+            for="deadline"
+            class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
+            >deadline</label
+          >
+          <VeeField
+            autocomplete="off"
+            id="deadline"
+            name="deadline"
+            type="text"
+            v-model="currentIssue.deadline"
+            :disabled="isViewItem"
+            class="mb-1 mt-1 flex h-10 w-full items-center rounded border border-gray-300 pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
+            placeholder="deadline"
+          />
+          <div class="flex justify-end px-2 text-xs text-red-600">
+            {{ errors && errors?.deadline }}
+          </div>
+        </div>
+
+        <div v-if="!isNewItem" class="mb-3">
+          <label
+            class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
+            >Created</label
+          >
+          <input
+            name="createdAt"
+            :value="formatDateTime(currentIssue.createdAt)"
+            readonly
+            class="mb-1 mt-1 flex h-10 w-full items-center rounded border border-gray-300 pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
+            placeholder="Date of creation"
+          />
+        </div>
+
+        <div v-if="!isNewItem" class="mb-3">
+          <label
+            class="pl-3 text-sm font-bold uppercase leading-tight tracking-normal text-gray-500"
+            >Updated</label
+          >
+          <input
+            name="updatedAt"
+            :value="formatDateTime(currentIssue.updatedAt)"
+            readonly
+            class="mb-1 mt-1 flex h-10 w-full items-center rounded border border-gray-300 pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
+            placeholder="Date of update"
+          />
         </div>
 
         <div class="mb-3">
@@ -335,7 +482,7 @@ const titleValue = computed(() => {
             Cancel
           </button>
 
-          <div class="invisible ml-auto sm:visible">
+          <div class="ml-auto">
             <button
               class="ml-3 border bg-gray-500 px-8 py-2 text-sm text-gray-100 transition duration-150 ease-in-out hover:border-gray-400 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 sm:rounded-lg"
               @click.prevent="resetModalForm"

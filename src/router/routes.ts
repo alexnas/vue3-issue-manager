@@ -30,7 +30,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/projects/:projectId/issues',
     name: 'Project',
-    component: () => import('@/views/ProjectIssuesView.vue'),
+    component: () => import('@/views/IssuesView.vue'),
     meta: { layout: DefaultLayout }
   },
 

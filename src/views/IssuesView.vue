@@ -2,7 +2,7 @@
 import { storeToRefs } from 'pinia'
 import { useProjectStore } from '@/stores/project'
 import ProjectViewContainer from '@/views/ProjectViewContainer.vue'
-import ProjectIssuesTable from '@/components/issues/ProjectIssuesTable.vue'
+import IssuesTable from '@/components/issues/IssuesTable.vue'
 
 const projectStore = useProjectStore()
 const { currentProject } = storeToRefs(projectStore)
@@ -10,6 +10,6 @@ const { currentProject } = storeToRefs(projectStore)
 
 <template>
   <project-view-container :pageTitle="`${currentProject?.title || 'Project is not selected'}`">
-    <project-issues-table />
+    <issues-table />
   </project-view-container>
 </template>
