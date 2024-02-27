@@ -1,9 +1,10 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
-import type { IIssue } from '@/types'
+import type { IIssue, IIssueKeys } from '@/types'
 import IssueService from '@/services/IssueService'
 import { getCurrentProjectId } from '@/tools/getProjectById'
+import { makeSortedByProperty } from '@/tools/sortingTools'
 
 const initIssue: IIssue = {
   id: -1,
@@ -33,7 +34,17 @@ export const useIssueStore = defineStore('issue', () => {
   const preEditedIssue = ref<IIssue>({ ...initIssue })
   const loading = ref<boolean>(false)
   const error = ref<string | null>(null)
+
+  const sortProperty = ref<IIssueKeys>('title')
+  const sortOrder = ref<'asc' | 'desc'>('asc')
   const filterStr = ref<string>('')
+
+  const sortedIssues = computed(() => {
+    const sorted = [...filteredIssues.value]
+    sorted.sort(makeSortedByProperty(sortProperty.value, sortOrder.value))
+
+    return sorted
+  })
 
   const filteredIssues = computed(() => {
     const filtered = issues.value.filter((item) => {
@@ -207,6 +218,9 @@ export const useIssueStore = defineStore('issue', () => {
     error,
     filterStr,
     filteredIssues,
+    sortProperty,
+    sortOrder,
+    sortedIssues,
     getIssues,
     createIssue,
     getOneIssueById,
