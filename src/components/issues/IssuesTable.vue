@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watchEffect } from 'vue'
+import { computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { Icon } from '@iconify/vue'
 import type { IIssue, IIssueKeys, IIssueTableCol } from '@/types'
@@ -93,10 +93,13 @@ const handleDeleteClick = async (issue: IIssue) => {
   modalStore.resetModalState()
 }
 
-watchEffect(() => {
-  currentProject.value?.id
-  issueStore.getIssues()
-})
+watch(
+  () => currentProject,
+  () => {
+    issueStore.getIssues()
+  },
+  { deep: true }
+)
 </script>
 
 <template>
