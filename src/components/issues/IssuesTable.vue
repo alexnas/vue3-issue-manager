@@ -2,7 +2,7 @@
 import { computed, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
 import { Icon } from '@iconify/vue'
-import type { IIssue, IIssueKeys, IIssueTableCol } from '@/types'
+import type { IIssue, IIssueKeys } from '@/types'
 import { useUserStore } from '@/stores/user'
 import { useProjectStore } from '@/stores/project'
 import { useIssueStore } from '@/stores/issue'
@@ -10,12 +10,18 @@ import { useModalStore } from '@/stores/modal'
 import { useIssueStatusStore } from '@/stores/issueStatus'
 import { useIssueKindStore } from '@/stores/issueKind'
 import { useIssuePriorityStore } from '@/stores/issuePriority'
+import { useIssueTableColStore } from '@/stores/issueTableCol'
 import { formatDateTime } from '@/tools/formatDate'
 import { getItemById } from '@/tools/getById'
 import IssueForm from '@/components/issues/IssueForm.vue'
 import AddNewButton from '@/components/shared/AddNewButton.vue'
 import FilterInput from '@/components/shared/FilterInput.vue'
+import IssueColsList from '@/components/issues/IssueColsList.vue'
 import { arrowUpIcon, arrowDownIcon } from '@/constants/icons'
+
+const issueTableColStore = useIssueTableColStore()
+
+const { currentIssueTableCols, visibleIssueCols } = storeToRefs(issueTableColStore)
 
 const modalStore = useModalStore()
 const userStore = useUserStore()
@@ -31,28 +37,6 @@ const issueKindStore = useIssueKindStore()
 const { issueKinds } = storeToRefs(issueKindStore)
 const issuePriorityStore = useIssuePriorityStore()
 const { issuePriorities } = storeToRefs(issuePriorityStore)
-
-const issueTableCols: IIssueTableCol[] = [
-  { field: 'id', title: 'ID', position: 1, isVisible: true },
-  { field: 'isActive', title: 'ON', position: 1, isVisible: true },
-  { field: 'title', title: 'TITLE', position: 1, isVisible: true },
-  { field: 'summary', title: 'summary', position: 1, isVisible: true },
-  { field: 'issueStatusId', title: 'statusId', position: 1, isVisible: true },
-  { field: 'issueKindId', title: 'kindId', position: 1, isVisible: true },
-  { field: 'issuePriorityId', title: 'priorityId', position: 1, isVisible: true },
-  { field: 'tags', title: 'tags', position: 1, isVisible: true },
-  { field: 'estimate', title: 'estimate', position: 1, isVisible: true },
-  { field: 'assigneeId', title: 'assignee', position: 1, isVisible: true },
-  { field: 'rankId', title: 'rankId', position: 1, isVisible: true },
-  { field: 'projectId', title: 'project', position: 1, isVisible: true },
-  { field: 'creatorId', title: 'creator', position: 1, isVisible: true },
-  { field: 'color', title: 'color', position: 1, isVisible: true },
-  { field: 'className', title: 'className', position: 1, isVisible: true },
-  { field: 'description', title: 'description', position: 1, isVisible: true },
-  { field: 'deadline', title: 'deadline', position: 1, isVisible: true },
-  { field: 'createdAt', title: 'CREATED', position: 1, isVisible: true },
-  { field: 'updatedAt', title: 'UPDATED', position: 1, isVisible: true }
-]
 
 const sortIcon = computed(() => {
   return sortOrder.value === 'asc' ? arrowUpIcon : arrowDownIcon
@@ -94,21 +78,29 @@ const handleDeleteClick = async (issue: IIssue) => {
 }
 
 watchEffect(() => {
-  currentProject.value?.id
   issueStore.getIssues()
 })
+
+const isColHidden = (field: IIssueKeys): boolean => {
+  return !visibleIssueCols.value.includes(field)
+}
 </script>
 
 <template>
-  <div class="pl-2">Totally: {{ issues.length }} === Filtered: {{ filteredIssues.length }}</div>
+  <div class="flex w-full justify-between lg:justify-start">
+    <div class="pl-2">Totally: {{ issues.length }} === Filtered: {{ filteredIssues.length }}</div>
+    <div class="relative -top-4 right-0 mr-1">
+      <IssueColsList />
+    </div>
+  </div>
   <div
-    class="mb-2 mt-0 flex h-12 max-h-12 w-auto items-center justify-end gap-8 text-gray-600 dark:text-gray-200 lg:-mt-6"
+    class="mb-2 mt-0 flex h-12 max-h-12 w-auto items-center justify-end gap-8 text-gray-600 dark:text-gray-200 lg:-mt-12"
   >
     <div class="flex gap-3 pl-2">
       <div class="text-md flex items-center">Filter</div>
       <FilterInput v-model="filterStr" />
+      <AddNewButton @openAddNew="handleAddNewClick()" />
     </div>
-    <AddNewButton @openAddNew="handleAddNewClick()" />
   </div>
 
   <div
@@ -123,9 +115,10 @@ watchEffect(() => {
           <th scope="col" class="px-4 py-3">Action</th>
           <th scope="col" class="px-4 py-3">#</th>
           <th
-            v-for="{ field, title } in issueTableCols"
+            v-for="{ field, title, isVisible } in currentIssueTableCols"
             :key="field"
             scope="col"
+            :hidden="!isVisible"
             class="cursor-pointer whitespace-nowrap px-4 py-3 hover:rounded-md hover:bg-teal-200 dark:hover:bg-teal-800"
             @click="handleSort(field)"
           >
@@ -164,40 +157,44 @@ watchEffect(() => {
             </button>
           </td>
           <td class="px-4 py-3">{{ idx + 1 }}</td>
-          <td class="px-4 py-3">{{ issue.id }}</td>
-          <td class="px-4 py-3">
+          <td :hidden="isColHidden('id')" class="px-4 py-3">{{ issue.id }}</td>
+          <td :hidden="isColHidden('isActive')" class="px-4 py-3">
             <Icon v-if="issue.isActive" icon="mdi:tick" class="text-3xl text-green-400" />
             <Icon v-else icon="mdi:cancel" class="text-3xl text-red-300" />
           </td>
-          <td class="px-4 py-3">{{ issue.title }}</td>
-          <td class="px-4 py-3">{{ issue.summary }}</td>
-          <td class="px-4 py-3">
+          <td :hidden="isColHidden('title')" class="px-4 py-3">{{ issue.title }}</td>
+          <td :hidden="isColHidden('summary')" class="px-4 py-3">{{ issue.summary }}</td>
+          <td :hidden="isColHidden('issueStatusId')" class="px-4 py-3">
             {{ issue.issueStatusId && getItemById(issueStatuses, issue.issueStatusId)?.name }}
           </td>
-          <td class="px-4 py-3">
+          <td :hidden="isColHidden('issueKindId')" class="px-4 py-3">
             {{ issue.issueKindId && getItemById(issueKinds, issue.issueKindId)?.name }}
           </td>
-          <td class="px-4 py-3">
+          <td :hidden="isColHidden('issuePriorityId')" class="px-4 py-3">
             {{ issue.issuePriorityId && getItemById(issuePriorities, issue.issuePriorityId)?.name }}
           </td>
-          <td class="px-4 py-3">{{ issue.tags }}</td>
-          <td class="px-4 py-3">{{ issue.estimate }}</td>
-          <td class="px-4 py-3">
+          <td :hidden="isColHidden('tags')" class="px-4 py-3">{{ issue.tags }}</td>
+          <td :hidden="isColHidden('estimate')" class="px-4 py-3">{{ issue.estimate }}</td>
+          <td :hidden="isColHidden('assigneeId')" class="px-4 py-3">
             {{ issue.assigneeId && getItemById(users, issue.assigneeId)?.name }}
           </td>
-          <td class="px-4 py-3">{{ issue.rankId }}</td>
-          <td class="px-4 py-3">
+          <td :hidden="isColHidden('rankId')" class="px-4 py-3">{{ issue.rankId }}</td>
+          <td :hidden="isColHidden('projectId')" class="px-4 py-3">
             {{ issue.projectId && getItemById(projects, issue.projectId)?.title }}
           </td>
-          <td class="px-4 py-3">
+          <td :hidden="isColHidden('creatorId')" class="px-4 py-3">
             {{ issue.creatorId && getItemById(users, issue.creatorId)?.name }}
           </td>
-          <td class="px-4 py-3">{{ issue.color }}</td>
-          <td class="px-4 py-3">{{ issue.className }}</td>
-          <td class="px-4 py-3">{{ issue.description }}</td>
-          <td class="px-4 py-3">{{ issue.deadline }}</td>
-          <td class="px-4 py-3">{{ formatDateTime(issue.createdAt) }}</td>
-          <td class="px-4 py-3">{{ formatDateTime(issue.updatedAt) }}</td>
+          <td :hidden="isColHidden('color')" class="px-4 py-3">{{ issue.color }}</td>
+          <td :hidden="isColHidden('className')" class="px-4 py-3">{{ issue.className }}</td>
+          <td :hidden="isColHidden('description')" class="px-4 py-3">{{ issue.description }}</td>
+          <td :hidden="isColHidden('deadline')" class="px-4 py-3">{{ issue.deadline }}</td>
+          <td :hidden="isColHidden('createdAt')" class="px-4 py-3">
+            {{ formatDateTime(issue.createdAt) }}
+          </td>
+          <td :hidden="isColHidden('updatedAt')" class="px-4 py-3">
+            {{ formatDateTime(issue.updatedAt) }}
+          </td>
         </tr>
       </tbody>
     </table>
@@ -209,14 +206,3 @@ watchEffect(() => {
 
   <div></div>
 </template>
-
-<style scoped>
-.modal {
-  position: fixed;
-  z-index: 999;
-  top: 50%;
-  left: 50%;
-  width: 300px;
-  margin-left: -150px;
-}
-</style>
