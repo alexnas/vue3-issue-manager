@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import { ref, type PropType } from 'vue'
+import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import { onClickOutside } from '@vueuse/core'
 import { Icon } from '@iconify/vue'
-import { type IIssueTableCol } from '@/types'
+import { useIssueTableColStore } from '@/stores/issueTableCol'
 import CustomCheckbox from '@/components/issues/CustomCheckbox.vue'
 
-const props = defineProps({
-  issueTableCols: Object as PropType<IIssueTableCol[]>
-})
+const issueTableColStore = useIssueTableColStore()
+const { currentIssueTableCols } = storeToRefs(issueTableColStore)
 
 const isHiddenMenu = ref(true)
 const targetDropDown = ref(null)
 
 onClickOutside(targetDropDown, () => {
   isHiddenMenu.value = true
-  console.log('onClickOutside', props.issueTableCols)
+  issueTableColStore.setCurrentIssueTableCols(currentIssueTableCols.value)
 })
 </script>
 
 <template>
-  <div class="flex w-full items-center justify-between gap-4">
+  <div class="-lg:mb-2 flex w-full items-center justify-between gap-4 lg:ml-8">
     <button
       v-if="isHiddenMenu"
       @click="isHiddenMenu = !isHiddenMenu"
@@ -45,8 +45,9 @@ onClickOutside(targetDropDown, () => {
       class="absolute right-0 z-10 w-full min-w-60 divide-y divide-gray-600 rounded-md bg-gray-700 shadow"
     >
       <form class="p-4">
-        <div class="mb-4 flex justify-center text-lg">Select visible columns</div>
-        <div v-for="col in props.issueTableCols" :key="`${col.field}`">
+        <div class="mb-3 flex justify-center text-lg">Select visible columns</div>
+        <div class="mx-6 mb-4 border-b-2 border-gray-400"></div>
+        <div v-for="col in currentIssueTableCols" :key="`${col.field}`">
           <CustomCheckbox :label="col.title" v-model="col.isVisible" :isDisabled="false" />
         </div>
       </form>
