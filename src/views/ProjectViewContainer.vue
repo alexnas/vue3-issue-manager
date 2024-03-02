@@ -9,7 +9,7 @@ defineProps({
 
 <template>
   <div
-    class="relative mx-auto my-6 flex flex-col overflow-y-auto px-2 dark:text-gray-200 sm:px-6 lg:px-8"
+    class="relative m-2 mx-auto flex flex-col overflow-y-auto px-2 py-4 dark:text-gray-200 sm:px-6 lg:px-8"
   >
     <div class="flex items-center justify-between">
       <div class="w-full">
