@@ -86,11 +86,11 @@ export const useIssueStore = defineStore('issue', () => {
 
   const getIssues = async () => {
     const projectId = getCurrentProjectId()
-
     try {
       loading.value = true
       const { data } = await IssueService.fetchIssuesService(projectId)
       issues.value = data
+      console.log('getIssues =========', issues.value)
       loading.value = false
       error.value = null
     } catch (err: any) {
