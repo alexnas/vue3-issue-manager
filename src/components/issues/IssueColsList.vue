@@ -23,14 +23,14 @@ onClickOutside(targetDropDown, () => {
     <button
       v-if="isHiddenMenu"
       @click="isHiddenMenu = !isHiddenMenu"
-      class="text-md flex cursor-pointer items-center gap-2 rounded-lg border-2 border-gray-600 p-2 text-center font-medium text-teal-500 hover:bg-gray-600 hover:text-orange-400"
+      class="text-md flex cursor-pointer items-center gap-2 rounded-lg border-2 border-gray-600 p-2 text-center font-medium text-teal-500 hover:bg-gray-100 hover:text-orange-400 dark:hover:bg-gray-600"
     >
       Fields<Icon class="w-5" :icon="'flowbite:angle-down-solid'" :inline="true" />
     </button>
     <button
       v-if="!isHiddenMenu"
       @click="isHiddenMenu = true"
-      class="text-md flex cursor-pointer items-center gap-2 rounded-lg border-2 border-gray-600 p-2 text-center font-medium text-orange-500 hover:bg-gray-600 hover:text-orange-400"
+      class="text-md flex cursor-pointer items-center gap-2 rounded-lg border-2 border-gray-600 p-2 text-center font-medium text-orange-500 hover:bg-gray-100 hover:text-orange-400 dark:hover:bg-gray-600"
     >
       Fields<Icon class="w-5" :icon="'material-symbols:close'" :inline="true" />
     </button>
@@ -42,7 +42,7 @@ onClickOutside(targetDropDown, () => {
       v-if="!isHiddenMenu"
       ref="targetDropDown"
       id="dropdownMenu"
-      class="absolute right-0 z-10 w-full min-w-60 divide-y divide-gray-600 rounded-md bg-gray-700 shadow"
+      class="absolute right-8 z-10 w-full min-w-60 divide-y divide-gray-600 rounded-md border-2 border-gray-300 bg-gray-50 shadow dark:bg-gray-700"
     >
       <form class="p-4">
         <div class="mb-3 flex justify-center text-lg">Select visible columns</div>

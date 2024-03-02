@@ -78,6 +78,7 @@ const handleDeleteClick = async (issue: IIssue) => {
 }
 
 watchEffect(() => {
+  currentProject.value?.id
   issueStore.getIssues()
 })
 
