@@ -42,7 +42,7 @@ onClickOutside(targetDropDown, () => {
       v-if="!isHiddenMenu"
       ref="targetDropDown"
       id="dropdownMenu"
-      class="absolute right-8 z-10 w-full min-w-60 divide-y divide-gray-600 rounded-md border-2 border-gray-300 bg-gray-50 shadow dark:bg-gray-700"
+      class="absolute -left-2 z-10 w-full min-w-60 divide-y divide-gray-600 rounded-md border-2 border-gray-300 bg-gray-50 shadow dark:bg-gray-700"
     >
       <form class="p-4">
         <div class="mb-3 flex justify-center text-lg">Select visible columns</div>
