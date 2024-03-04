@@ -11,7 +11,7 @@ const { isSidebarHidden } = storeToRefs(userSettingsStore)
 <template>
   <div
     class="flex w-56 min-w-[theme('spacing[56]')] flex-col bg-gray-600"
-    :class="[isSidebarHidden ? 'mx-0 w-0 min-w-0 bg-gray-600' : '']"
+    :class="[isSidebarHidden ? '-ml-56' : '']"
   >
     <div class="mx-4 my-4 flex items-center justify-start">
       <div class="flex items-center gap-4">

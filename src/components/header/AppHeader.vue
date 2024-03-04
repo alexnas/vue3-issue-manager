@@ -19,7 +19,7 @@ const { isSidebarHidden } = storeToRefs(userSettingsStore)
         class="cursor-pointer rounded-sm p-2 text-center text-xl font-medium text-teal-500 hover:bg-gray-500 hover:text-orange-400"
         :class="[
           isSidebarHidden
-            ? 'border-1 -my-5 -ml-4 border-gray-700 bg-gray-700 hover:bg-gray-500 hover:shadow-inner hover:shadow-gray-200'
+            ? 'border-1 -my-4 -ml-4 border-gray-700 bg-gray-700 hover:bg-gray-500 hover:shadow-inner hover:shadow-gray-200'
             : ''
         ]"
       >
