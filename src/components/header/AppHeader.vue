@@ -4,7 +4,7 @@ import { Icon } from '@iconify/vue'
 import { useUserSettings } from '@/stores/userSettings'
 import NavBar from '@/components/header/NavBar.vue'
 import DarkModeButton from '@/components/shared/DarkModeButton.vue'
-import KanbanSwitcher from '@/kanban/KanbanSwitcher.vue'
+import BoardSwitcher from '@/board/components/BoardSwitcher.vue'
 
 const userSettingsStore = useUserSettings()
 const { isSidebarHidden } = storeToRefs(userSettingsStore)
@@ -32,7 +32,7 @@ const { isSidebarHidden } = storeToRefs(userSettingsStore)
       </button>
 
       <img alt="Vue logo" src="@/assets/logo.svg" width="30" height="30" />
-      <kanban-switcher />
+      <board-switcher />
     </div>
 
     <div class="flex">

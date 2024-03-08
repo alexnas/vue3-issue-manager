@@ -4,22 +4,22 @@ import { useUserSettings } from '@/stores/userSettings'
 import { activeNavMenuItem, inactiveNavMenuItem } from '@/assets/styles/twClasses'
 
 const userSettingsStore = useUserSettings()
-const { isKanbanView } = storeToRefs(userSettingsStore)
+const { isBoardView } = storeToRefs(userSettingsStore)
 </script>
 
 <template>
   <div class="flex gap-1 text-white">
     <button
       class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700"
-      :class="[isKanbanView ? activeNavMenuItem : inactiveNavMenuItem]"
-      @click="isKanbanView = true"
+      :class="[isBoardView ? activeNavMenuItem : inactiveNavMenuItem]"
+      @click="isBoardView = true"
     >
-      Kanban
+      Board
     </button>
     <button
       class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700"
-      :class="[!isKanbanView ? activeNavMenuItem : inactiveNavMenuItem]"
-      @click="isKanbanView = false"
+      :class="[!isBoardView ? activeNavMenuItem : inactiveNavMenuItem]"
+      @click="isBoardView = false"
     >
       Table
     </button>

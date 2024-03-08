@@ -2,12 +2,12 @@
 import { storeToRefs } from 'pinia'
 import { useProjectStore } from '@/stores/project'
 import { useUserSettings } from '@/stores/userSettings'
-import IssuesTable from '@/components/issues/IssuesTable.vue'
+import IssuesTableView from '@/components/issues/IssuesTable.vue'
 import ProjectViewContainer from '@/views/ProjectViewContainer.vue'
-import KanbanBoard from '@/kanban/KanbanBoard.vue'
+import BoardView from '@/board/views/BoardView.vue'
 
 const userSettingsStore = useUserSettings()
-const { isKanbanView } = storeToRefs(userSettingsStore)
+const { isBoardView } = storeToRefs(userSettingsStore)
 
 const projectStore = useProjectStore()
 const { currentProject } = storeToRefs(projectStore)
@@ -15,11 +15,11 @@ const { currentProject } = storeToRefs(projectStore)
 
 <template>
   <project-view-container :pageTitle="`${currentProject?.title || 'Project is not selected'}`">
-    <div v-if="isKanbanView">
-      <kanban-board />
+    <div v-if="isBoardView">
+      <board-view />
     </div>
     <div v-else>
-      <issues-table />
+      <issues-table-view />
     </div>
   </project-view-container>
 </template>
