@@ -2,12 +2,24 @@
 import { storeToRefs } from 'pinia'
 import { Icon } from '@iconify/vue'
 import { useUserSettings } from '@/stores/userSettings'
-import NavBar from '@/components/header/NavBar.vue'
 import DarkModeButton from '@/components/shared/DarkModeButton.vue'
 import BoardSwitcher from '@/board/components/BoardSwitcher.vue'
+import { useProjectStore } from '@/stores/project'
+import { onMounted } from 'vue'
+import SelectProject from '@/components/header/SelectProject.vue'
+
+const projectStore = useProjectStore()
+const { projects, currentProject } = storeToRefs(projectStore)
 
 const userSettingsStore = useUserSettings()
 const { isSidebarHidden } = storeToRefs(userSettingsStore)
+
+onMounted(async () => {
+  const data = localStorage.getItem('currentProject')
+  const currentProject = data ? JSON.parse(data) : null
+  projectStore.setCurrentProject(currentProject)
+  await projectStore.getProjects()
+})
 </script>
 
 <template>
@@ -32,14 +44,19 @@ const { isSidebarHidden } = storeToRefs(userSettingsStore)
       </button>
 
       <img alt="Vue logo" src="@/assets/logo.svg" width="30" height="30" />
-      <board-switcher />
+
+      <div class="flex items-center">
+        <div class="relative right-0 mr-1 p-1">
+          <SelectProject />
+        </div>
+      </div>
     </div>
 
-    <div class="flex">
-      <nav class="flex gap-6">
-        <NavBar />
-      </nav>
-      <div class="-mt-1 ml-6"><DarkModeButton /></div>
+    <div class="flex items-center">
+      <board-switcher />
+      <div class="-mt-1 ml-6">
+        <DarkModeButton />
+      </div>
     </div>
   </header>
 </template>

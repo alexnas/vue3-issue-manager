@@ -39,7 +39,7 @@ const onSelectProject = () => {
       :icon="'bi:app'"
       :inline="true"
     />
-    <span class="mx-4">{{ project.title }}</span>
+    <span class="mx-4 max-w-40 truncate">{{ project.title }}</span>
   </router-link>
 </template>
 
