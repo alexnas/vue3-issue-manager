@@ -6,7 +6,6 @@ import { Icon } from '@iconify/vue'
 import type { ISideMenuItem } from '@/types'
 import { useProjectStore } from '@/stores/project'
 import SidebarLinkItem from '@/components/sidebar/SidebarLinkItem.vue'
-import SidebarProjectItem from '@/components/sidebar/SidebarProjectItem.vue'
 import { activeMenuItem, inactiveMenuItem } from '@/assets/styles/twClasses'
 import { getProjectById } from '@/tools/getProjectById'
 
@@ -77,35 +76,9 @@ onMounted(async () => {
         </div>
       </div>
     </router-link>
-    <button
-      v-if="isHiddenMenu"
-      @click="isHiddenMenu = !isHiddenMenu"
-      class="cursor-pointer rounded-lg border-2 border-gray-500 p-2 text-center text-xl font-medium text-teal-500 hover:bg-gray-500 hover:text-orange-400"
-    >
-      <Icon class="w-5" :icon="'flowbite:angle-down-solid'" :inline="true" />
-    </button>
-    <button
-      v-if="!isHiddenMenu"
-      @click="isHiddenMenu = true"
-      class="cursor-pointer rounded-lg border-2 border-gray-500 p-2 text-center text-xl font-medium text-orange-500 hover:bg-gray-500 hover:text-orange-400"
-    >
-      <Icon class="w-5" :icon="'material-symbols:close'" :inline="true" />
-    </button>
   </div>
 
   <div class="overflow-y-auto">
-    <!-- Dropdown menu -->
-    <div
-      v-if="!isHiddenMenu"
-      ref="targetDropDown"
-      id="dropdownMenu"
-      class="z-10 w-full divide-y divide-gray-600 rounded-lg bg-gray-700 shadow"
-    >
-      <nav class="mt-2" v-for="project in projects" :key="`${project.id}`">
-        <sidebar-project-item :project="project" @select-project="handleSelectProject" />
-      </nav>
-    </div>
-
     <div class="mx-6 my-6 border-b-2 border-gray-400"></div>
 
     <div className="mx-4 my-4 flex items-center justify-start">
