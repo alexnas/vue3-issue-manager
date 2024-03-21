@@ -55,18 +55,34 @@ const onAdd = (event: SortableEvent, issuesList: IIssue[], issueStatusId: number
   if (typeof newIndex == 'undefined') return
   onSaveDraggedData(newIndex, issuesList, issueStatusId)
 }
+
+const bulletColors = (index: number) => {
+  const color = ['#49C4E5', '#8471F2', '#67E2AE']
+  if (color[index]) {
+    return color[index]
+  } else {
+    let rand = Math.random()
+    rand = Math.floor(rand * 360) + 1
+    const randomColor = `hsl(${rand}, 80%, 70%)`
+    return randomColor
+  }
+}
 </script>
 
 <template>
   <div class="flex gap-6">
-    <div v-for="column in currentBoardColumns" :key="column.issueStatus.id">
+    <div v-for="(column, columnIndex) in currentBoardColumns" :key="column.issueStatus.id">
       <div
         class="flex min-w-60 max-w-60 flex-col gap-2 rounded border border-gray-800 text-gray-300"
       >
-        <div class="draggables-center flex justify-between gap-4">
-          <div class="flex flex-1 items-center gap-2 p-2 font-semibold">
-            {{ column.issueStatus.label }} ({{ column.columnIssues.length }})
-          </div>
+        <div class="flex items-center gap-3 p-4">
+          <div
+            class="h-4 w-4 rounded-full"
+            :style="{ backgroundColor: bulletColors(columnIndex) }"
+          ></div>
+          <h2 class="text-sm font-bold uppercase">
+            {{ column.issueStatus.label }} ( {{ column.columnIssues.length }} )
+          </h2>
         </div>
 
         <div class="rounded-md border border-gray-400/50 bg-green-100 text-gray-600">
