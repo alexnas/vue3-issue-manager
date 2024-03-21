@@ -13,10 +13,10 @@ export interface IColumn {
 
 export const useBoardStore = defineStore('board', () => {
   const issueStore = useIssueStore()
-  const { issues } = storeToRefs(issueStore)
+  const { filteredIssues } = storeToRefs(issueStore)
 
   const sortedIssues = computed(() => {
-    const sorted = [...issues.value]
+    const sorted = [...filteredIssues.value]
     sorted.sort(makeSortedByProperty('rankId', 'asc'))
     return sorted
   })

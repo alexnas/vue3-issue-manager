@@ -5,6 +5,7 @@ import { useProjectStore } from '@/stores/project'
 import { useIssueStore } from '@/stores/issue'
 import { useBoardStore } from '@/board/stores/board'
 import BoardColumns from '@/board/components/BoardColumns.vue'
+import BoardActionsPanel from '@/board/components/BoardActionsPanel.vue'
 
 const projectStore = useProjectStore()
 const { currentProject } = storeToRefs(projectStore)
@@ -40,7 +41,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="my-6">Board Action Buttons Panel</div>
+  <board-actions-panel />
   <board-columns />
 </template>
 
