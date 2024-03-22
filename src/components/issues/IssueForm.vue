@@ -53,6 +53,7 @@ const handleEditClick = () => {
 
 const handleSubmit = async () => {
   if (isNewItem.value) {
+    boardStore.createItemOrder()
     await issueStore.createIssue(currentIssue.value)
   } else {
     boardStore.updateItemOrder()

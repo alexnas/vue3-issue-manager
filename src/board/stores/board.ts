@@ -52,6 +52,16 @@ export const useBoardStore = defineStore('board', () => {
     return lastIssueOrder
   }
 
+  const createItemOrder = () => {
+    const currentStatusId = currentIssue.value.issueStatusId
+      ? currentIssue.value.issueStatusId
+      : INITIAL_STATUS_ID
+    const maxColOrder = currentStatusId ? maxColumnItemOrder(currentStatusId) : 0
+    currentIssue.value.rankId = maxColOrder + 100
+
+    return currentIssue.value.rankId
+  }
+
   const updateItemOrder = () => {
     const prevStatusId = preEditedIssue.value.issueStatusId
     let currentStatusId = currentIssue.value.issueStatusId
@@ -79,6 +89,7 @@ export const useBoardStore = defineStore('board', () => {
     getBoardIssuesByStatusId,
     getBoardColumsByStatus,
     maxColumnItemOrder,
+    createItemOrder,
     updateItemOrder
   }
 })
