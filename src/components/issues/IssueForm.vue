@@ -9,6 +9,7 @@ import { useIssueKindStore } from '@/stores/issueKind'
 import { useIssuePriorityStore } from '@/stores/issuePriority'
 import { useUserStore } from '@/stores/user'
 import { useProjectStore } from '@/stores/project'
+import { useBoardStore } from '@/board/stores/board'
 import BaseModal from '@/components/modal/BaseModal.vue'
 import issueFormSchemaYup from '@/components/issues/issueFormSchemaYup'
 import CustomCheckbox from '@/components/issues/CustomCheckbox.vue'
@@ -28,6 +29,7 @@ const userStore = useUserStore()
 const { users } = storeToRefs(userStore)
 const projectStore = useProjectStore()
 const { currentProject } = storeToRefs(projectStore)
+const boardStore = useBoardStore()
 
 const modalTitle = computed(() => {
   return isViewItem.value || !isNewItem.value
@@ -53,7 +55,7 @@ const handleSubmit = async () => {
   if (isNewItem.value) {
     await issueStore.createIssue(currentIssue.value)
   } else {
-    console.log('updateIssue', currentIssue.value)
+    boardStore.updateItemOrder()
     await issueStore.updateIssue(currentIssue.value)
   }
 
@@ -197,7 +199,7 @@ watchEffect(() => {
             name="rankId"
             type="number"
             v-model="currentIssue.rankId"
-            :disabled="isViewItem"
+            disabled
             class="mb-1 mt-1 flex h-10 w-full items-center rounded border border-gray-300 pl-3 text-sm font-normal text-gray-600 focus:border focus:border-indigo-700 focus:outline-none"
             placeholder="rankId"
           />

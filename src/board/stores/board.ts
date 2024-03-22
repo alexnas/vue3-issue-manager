@@ -1,9 +1,11 @@
 import { computed, ref } from 'vue'
 import { defineStore, storeToRefs } from 'pinia'
+import type { IIssue, IIssueStatus } from '@/types'
 import { useIssueStore } from '@/stores/issue'
 import { useIssueStatusStore } from '@/stores/issueStatus'
-import type { IIssue, IIssueStatus } from '@/types'
 import { makeSortedByProperty } from '@/tools/sortingTools'
+import { getItemById } from '@/tools/getById'
+import { INITIAL_STATUS_ID } from '@/board/constants/boardConstants'
 
 export interface IColumn {
   id: number
@@ -13,7 +15,7 @@ export interface IColumn {
 
 export const useBoardStore = defineStore('board', () => {
   const issueStore = useIssueStore()
-  const { filteredIssues } = storeToRefs(issueStore)
+  const { filteredIssues, currentIssue, preEditedIssue } = storeToRefs(issueStore)
 
   const sortedIssues = computed(() => {
     const sorted = [...filteredIssues.value]
@@ -41,9 +43,42 @@ export const useBoardStore = defineStore('board', () => {
     return columns
   }
 
+  const maxColumnItemOrder = (currentStatusId: number) => {
+    const newCol = getItemById(currentBoardColumns.value, currentStatusId)
+    const lastIssueOrder =
+      !!newCol && newCol.columnIssues.length > 0
+        ? newCol.columnIssues[newCol.columnIssues.length - 1].rankId
+        : 0
+    return lastIssueOrder
+  }
+
+  const updateItemOrder = () => {
+    const prevStatusId = preEditedIssue.value.issueStatusId
+    let currentStatusId = currentIssue.value.issueStatusId
+    const prevOrder = preEditedIssue.value.rankId
+
+    if (!prevStatusId && !currentStatusId) {
+      currentStatusId = INITIAL_STATUS_ID
+    } else {
+      currentStatusId = currentStatusId ? currentStatusId : prevStatusId
+    }
+
+    if (!currentStatusId) return
+    const maxNewColOrder = maxColumnItemOrder(currentStatusId)
+    if (currentStatusId === prevStatusId) {
+      currentIssue.value.rankId = prevOrder ? prevOrder : maxNewColOrder + 100
+    } else {
+      currentIssue.value.rankId = maxNewColOrder + 100
+    }
+
+    return currentIssue.value.rankId
+  }
+
   return {
     currentBoardColumns,
     getBoardIssuesByStatusId,
-    getBoardColumsByStatus
+    getBoardColumsByStatus,
+    maxColumnItemOrder,
+    updateItemOrder
   }
 })
