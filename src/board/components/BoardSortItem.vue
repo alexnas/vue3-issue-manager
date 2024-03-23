@@ -25,7 +25,6 @@ const menuActiveClass = computed(() => {
 })
 
 const handleSort = () => {
-  console.log('handleSort', props.sortItem)
   emit('selectSortItem', props.sortItem)
 }
 </script>
