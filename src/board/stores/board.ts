@@ -37,7 +37,6 @@ export const useBoardStore = defineStore('board', () => {
   const sortedIssues = computed(() => {
     const sorted = [...filteredIssues.value]
     sorted.sort(makeSortedByProperty(sortProperty.value, sortOrder.value))
-    console.log('sorted Board', sorted)
     return sorted
   })
 
