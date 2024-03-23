@@ -1,11 +1,12 @@
 import { computed, ref } from 'vue'
 import { defineStore, storeToRefs } from 'pinia'
-import type { IIssue, IIssueStatus } from '@/types'
+import type { IIssue, IIssueKeys, IIssueStatus, IIssueTableCol } from '@/types'
 import { useIssueStore } from '@/stores/issue'
 import { useIssueStatusStore } from '@/stores/issueStatus'
 import { makeSortedByProperty } from '@/tools/sortingTools'
 import { getItemById } from '@/tools/getById'
 import { INITIAL_STATUS_ID } from '@/board/constants/boardConstants'
+import { initBoardSortingFields } from '../constants/boardInitials'
 
 export interface IColumn {
   id: number
@@ -16,10 +17,27 @@ export interface IColumn {
 export const useBoardStore = defineStore('board', () => {
   const issueStore = useIssueStore()
   const { filteredIssues, currentIssue, preEditedIssue } = storeToRefs(issueStore)
+  const sortProperty = ref<IIssueKeys>('rankId')
+  const sortOrder = ref<'asc' | 'desc'>('asc')
+  const currentBoardSortingFields = ref<IIssueTableCol[]>([...initBoardSortingFields])
+  const currentBoardSortItem = ref<IIssueTableCol>({ ...initBoardSortingFields[0] })
+
+  const visibleBoardSortingFields = computed(() => {
+    const res = currentBoardSortingFields.value
+      .map((item) => {
+        if (item && item.isVisible) {
+          return item
+        }
+        return null
+      })
+      .filter((item) => item)
+    return res ? res : []
+  })
 
   const sortedIssues = computed(() => {
     const sorted = [...filteredIssues.value]
-    sorted.sort(makeSortedByProperty('rankId', 'asc'))
+    sorted.sort(makeSortedByProperty(sortProperty.value, sortOrder.value))
+    console.log('sorted Board', sorted)
     return sorted
   })
 
@@ -86,6 +104,11 @@ export const useBoardStore = defineStore('board', () => {
 
   return {
     currentBoardColumns,
+    currentBoardSortingFields,
+    currentBoardSortItem,
+    visibleBoardSortingFields,
+    sortProperty,
+    sortOrder,
     getBoardIssuesByStatusId,
     getBoardColumsByStatus,
     maxColumnItemOrder,
