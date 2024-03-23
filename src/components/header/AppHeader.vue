@@ -9,7 +9,6 @@ import { onMounted } from 'vue'
 import SelectProject from '@/components/header/SelectProject.vue'
 
 const projectStore = useProjectStore()
-const { projects, currentProject } = storeToRefs(projectStore)
 
 const userSettingsStore = useUserSettings()
 const { isSidebarHidden } = storeToRefs(userSettingsStore)
