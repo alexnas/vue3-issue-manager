@@ -1,21 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import type { PropType } from 'vue'
 import { Icon } from '@iconify/vue'
+import type { IIssuePriority } from '@/types'
 
-const props = defineProps({
-  modelValue: { type: [Array, Boolean] },
-  value: { type: [Boolean, Object] },
-  label: { type: String },
-  isDisabled: { type: Boolean }
-})
-const emit = defineEmits(['update:modelValue'])
-const model = computed({
-  get() {
-    return props.modelValue
-  },
-  set(value) {
-    emit('update:modelValue', value)
-  }
+defineProps({
+  value: { type: Object as PropType<IIssuePriority | null> },
+  item: { type: Object }
 })
 </script>
 
@@ -27,11 +17,10 @@ const model = computed({
       data-ripple-dark="true"
     >
       <input
-        id="ripple-on"
-        type="checkbox"
-        v-model="model"
-        :disabled="isDisabled"
+        type="radio"
         :value="value"
+        :checked="value == item"
+        @change="$emit('update:modelValue', item)"
         class="before:content[''] before:bg-blue-gray-500 peer relative h-5 w-5 cursor-pointer appearance-none rounded-md border-2 border-gray-300 transition-all before:absolute before:left-2/4 before:top-2/4 before:block before:h-12 before:w-12 before:-translate-x-2/4 before:-translate-y-2/4 before:rounded-full before:opacity-0 before:transition-opacity checked:border-teal-600 checked:bg-teal-600 checked:before:bg-gray-900 hover:before:opacity-10 dark:border"
       />
       <span
@@ -41,7 +30,7 @@ const model = computed({
       </span>
     </label>
     <label class="cursor-pointer select-none font-light" htmlFor="ripple-on">
-      {{ label }}
+      <span>{{ item?.label }}</span>
     </label>
   </div>
 </template>
