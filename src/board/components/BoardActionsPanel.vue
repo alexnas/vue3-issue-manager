@@ -4,12 +4,12 @@ import { useIssueStore } from '@/stores/issue'
 import { useModalStore } from '@/stores/modal'
 import IssueForm from '@/components/issues/IssueForm.vue'
 import AddNewButton from '@/components/shared/AddNewButton.vue'
-import FilterInput from '@/components/shared/FilterInput.vue'
 import BoardSorting from '@/board/components/BoardSorting.vue'
+import BoardFiltering from '@/board/components/BoardFiltering.vue'
 
 const modalStore = useModalStore()
 const issueStore = useIssueStore()
-const { issues, filterStr, filteredIssues } = storeToRefs(issueStore)
+const { issues, filteredIssues } = storeToRefs(issueStore)
 
 const handleAddNewClick = () => {
   issueStore.resetCurrentIssue()
@@ -30,9 +30,10 @@ const handleAddNewClick = () => {
       <div class="relative right-0 mr-1 p-1">
         <BoardSorting />
       </div>
+      <div class="relative right-0 mr-1 p-1">
+        <BoardFiltering />
+      </div>
 
-      <div class="text-md flex items-center">Filter</div>
-      <FilterInput v-model="filterStr" />
       <AddNewButton @openAddNew="handleAddNewClick()" />
     </div>
   </div>

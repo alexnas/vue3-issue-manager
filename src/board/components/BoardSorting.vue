@@ -32,9 +32,13 @@ const hangleChangeSortDirection = () => {
 <template>
   <div class="-lg:mb-2 flex w-full items-center justify-between gap-4 lg:ml-8">
     <div
-      class="text-md flex items-center gap-2 text-nowrap rounded-lg border-2 border-gray-600 p-2 text-center font-medium text-teal-500 hover:bg-gray-100 hover:text-orange-400 dark:hover:bg-gray-600"
+      class="text-md flex items-center gap-2 text-nowrap rounded-lg border-2 border-gray-600 p-2 text-center font-medium text-teal-500 hover:bg-gray-100 hover:text-orange-400"
+      :class="`${isHiddenModal ? 'dark:bg-gray-600/50 dark:hover:bg-gray-600' : 'bg-gray-600 dark:hover:bg-gray-600/50'}`"
     >
-      <div @click="hangleChangeSortDirection" class="w-5 cursor-pointer text-2xl text-gray-300">
+      <div
+        @click="hangleChangeSortDirection"
+        class="w-5 cursor-pointer text-2xl text-gray-300 hover:text-green-400"
+      >
         <Icon v-if="sortOrder == 'asc'" :icon="'ion:caret-down'" :inline="true" />
         <Icon v-if="sortOrder == 'desc'" :icon="'ion:caret-up'" :inline="true" />
       </div>
@@ -60,7 +64,7 @@ const hangleChangeSortDirection = () => {
       v-if="!isHiddenModal"
       ref="targetDropDown"
       id="dropdownMenu"
-      class="absolute -left-2 z-10 w-full min-w-60 divide-y divide-gray-600 rounded-md border-2 border-gray-300 bg-gray-50 shadow dark:bg-gray-700"
+      class="absolute -left-2 top-14 z-10 w-full min-w-60 divide-y divide-gray-600 rounded-md border-2 border-gray-300 bg-gray-50 shadow dark:bg-gray-700"
     >
       <div class="p-4">
         <div class="mb-3 flex justify-center text-base">
