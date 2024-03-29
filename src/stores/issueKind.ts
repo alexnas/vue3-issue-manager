@@ -16,7 +16,6 @@ export const useIssueKindStore = defineStore('issueKind', () => {
       loading.value = true
       const { data } = await IssueKindService.fetchUsers(currentProjectId)
       issueKinds.value = data
-      console.log('issueKinds.value>>>>>>>>', issueKinds.value)
       loading.value = false
       error.value = null
     } catch (err: any) {
