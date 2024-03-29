@@ -16,7 +16,6 @@ export const useIssueStatusStore = defineStore('issueStatus', () => {
       loading.value = true
       const { data } = await IssueStatusService.fetchUsers(currentProjectId)
       issueStatuses.value = data
-      console.log('issueStatuses.value>>>>>>>>', issueStatuses.value)
       loading.value = false
       error.value = null
     } catch (err: any) {
