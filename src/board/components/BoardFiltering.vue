@@ -3,33 +3,27 @@ import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { onClickOutside } from '@vueuse/core'
 import { Icon } from '@iconify/vue'
-import type { IIssueKind, IIssuePriority } from '@/types'
-import { useIssueStore } from '@/stores/issue'
 import { useIssuePriorityStore } from '@/stores/issuePriority'
 import { useIssueKindStore } from '@/stores/issueKind'
+import { useBoardStore } from '@/board/stores/board'
 import BoardFilterInput from '@/board/components/BoardFilterInput.vue'
-import BoardCustomRadioInput from '@/board/components/BoardCustomRadioInput.vue'
 import MenuToggleButton from '@/board/components/MenuToggleButton.vue'
 import CustomCheckbox from '@/components/issues/CustomCheckbox.vue'
 import { initDueItems, type IDueItem } from '@/board/constants/boardInitials'
 
-const issueStore = useIssueStore()
-const { filterStr } = storeToRefs(issueStore)
+const boardStore = useBoardStore()
+const { filterStr, filterSetup } = storeToRefs(boardStore)
 const issuePriorityStore = useIssuePriorityStore()
 const { issuePriorities } = storeToRefs(issuePriorityStore)
 const issueKindStore = useIssueKindStore()
 const { issueKinds } = storeToRefs(issueKindStore)
 
 const isHiddenModal = ref(true)
-const targetDropDown = ref(null)
-
 const isHiddenDueDateMenu = ref(true)
 const isHiddenPriorityMenu = ref(true)
 const isHiddenKindMenu = ref(true)
-
 const dueItems = ref<IDueItem[]>([...initDueItems])
-const prioritySelected = ref<IIssuePriority | null>(null)
-const kindSelected = ref<IIssueKind | null>(null)
+const targetDropDown = ref(null)
 
 onClickOutside(targetDropDown, () => {
   isHiddenModal.value = true
@@ -42,21 +36,12 @@ const toggleDueDateMenu = () => {
 const togglePriorityMenu = () => {
   isHiddenPriorityMenu.value = !isHiddenPriorityMenu.value
 }
-const selectPriority = (item: IIssuePriority) => {
-  prioritySelected.value = item
-}
-const cancelPriorityFilter = () => {
-  prioritySelected.value = null
-}
 
 const toggleKindMenu = () => {
   isHiddenKindMenu.value = !isHiddenKindMenu.value
 }
-const selectKind = (item: IIssueKind) => {
-  kindSelected.value = item
-}
-const cancelKindFilter = () => {
-  kindSelected.value = null
+const cancelFilterSetup = () => {
+  filterSetup.value = { prioritiesChecked: [], kindsChecked: [] }
 }
 </script>
 
@@ -96,7 +81,7 @@ const cancelKindFilter = () => {
           <div class="mx-6 border-b-2 border-gray-400/50"></div>
           <div class="flex items-center gap-2">
             <Icon class="w-5 text-2xl text-gray-400" :icon="'octicon:search-16'" :inline="true" />
-            <board-filter-input v-model="filterStr" />
+            <BoardFilterInput v-model="filterStr" />
           </div>
 
           <div class="mx-6 border-b-2 border-gray-400/50"></div>
@@ -106,7 +91,7 @@ const cancelKindFilter = () => {
               <div class="flex w-full items-center justify-between">
                 <div class="font-semibold">Due date</div>
                 <div class="flex items-center gap-3 font-light text-teal-400">
-                  <menu-toggle-button
+                  <MenuToggleButton
                     @click="toggleDueDateMenu"
                     :isHiddenItem="isHiddenDueDateMenu"
                   />
@@ -130,7 +115,7 @@ const cancelKindFilter = () => {
 
           <div>
             <div class="flex items-center justify-between text-base">
-              <button @click="cancelPriorityFilter">
+              <button @click="cancelFilterSetup">
                 <span>
                   <Icon
                     class="w-6 min-w-[theme('spacing[5]')] text-3xl hover:text-orange-400"
@@ -139,25 +124,21 @@ const cancelKindFilter = () => {
                   />
                 </span>
               </button>
-
               <div class="flex w-full items-center justify-between pl-4">
                 <div class="font-semibold">Priority</div>
-                <div class="flex items-center gap-3 font-light text-teal-400">
-                  {{ prioritySelected?.label ? prioritySelected?.label : 'Not selected' }}
-
-                  <menu-toggle-button
-                    @click="togglePriorityMenu"
-                    :isHiddenItem="isHiddenPriorityMenu"
-                  />
-                </div>
+                <MenuToggleButton
+                  @click="togglePriorityMenu"
+                  :isHiddenItem="isHiddenPriorityMenu"
+                />
               </div>
             </div>
+
             <div v-if="!isHiddenPriorityMenu" class="ml-3 mt-2 grid">
-              <div v-for="(priority, index) in issuePriorities" :key="priority.id">
-                <board-custom-radio-input
-                  :value="prioritySelected"
-                  :item="issuePriorities[index]"
-                  @update:modelValue="selectPriority"
+              <div v-for="priority in issuePriorities" :key="priority.id">
+                <CustomCheckbox
+                  :label="priority.label"
+                  :value="priority"
+                  v-model="filterSetup.prioritiesChecked"
                 />
               </div>
             </div>
@@ -167,7 +148,7 @@ const cancelKindFilter = () => {
 
           <div>
             <div class="flex items-center justify-between text-base">
-              <button @click="cancelKindFilter">
+              <button @click="cancelFilterSetup">
                 <span>
                   <Icon
                     class="w-6 min-w-[theme('spacing[5]')] text-3xl hover:text-orange-400"
@@ -176,27 +157,24 @@ const cancelKindFilter = () => {
                   />
                 </span>
               </button>
-
               <div class="flex w-full items-center justify-between pl-4">
                 <div class="font-semibold">Issue kind</div>
-                <div class="flex items-center gap-3 font-light text-teal-400">
-                  {{ kindSelected?.label ? kindSelected?.label : 'Not selected' }}
-
-                  <menu-toggle-button @click="toggleKindMenu" :isHiddenItem="isHiddenKindMenu" />
-                </div>
+                <MenuToggleButton @click="toggleKindMenu" :isHiddenItem="isHiddenKindMenu" />
               </div>
             </div>
 
             <div v-if="!isHiddenKindMenu" class="ml-3 mt-2 grid">
-              <div v-for="(kind, index) in issueKinds" :key="kind.id">
-                <board-custom-radio-input
-                  :value="kindSelected"
-                  :item="issueKinds[index]"
-                  @update:modelValue="selectKind"
+              <div v-for="kind in issueKinds" :key="kind.id">
+                <CustomCheckbox
+                  :label="kind.label"
+                  :value="kind"
+                  v-model="filterSetup.kindsChecked"
                 />
               </div>
             </div>
           </div>
+
+          <div class="mx-6 border-b-2 border-gray-400/50"></div>
         </div>
       </div>
     </div>
