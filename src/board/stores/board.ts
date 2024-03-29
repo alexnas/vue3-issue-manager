@@ -1,6 +1,13 @@
 import { computed, ref } from 'vue'
 import { defineStore, storeToRefs } from 'pinia'
-import type { IIssue, IIssueKeys, IIssueStatus, IIssueTableCol } from '@/types'
+import type {
+  IIssue,
+  IIssueKeys,
+  IIssueKind,
+  IIssuePriority,
+  IIssueStatus,
+  IIssueTableCol
+} from '@/types'
 import { useIssueStore } from '@/stores/issue'
 import { useIssueStatusStore } from '@/stores/issueStatus'
 import { makeSortedByProperty } from '@/tools/sortingTools'
@@ -13,14 +20,45 @@ export interface IColumn {
   issueStatus: IIssueStatus
   columnIssues: IIssue[]
 }
+export interface IFilterSetup {
+  prioritiesChecked: IIssuePriority[]
+  kindsChecked: IIssueKind[]
+}
 
 export const useBoardStore = defineStore('board', () => {
   const issueStore = useIssueStore()
-  const { filteredIssues, currentIssue, preEditedIssue } = storeToRefs(issueStore)
+  const { issues, currentIssue, preEditedIssue } = storeToRefs(issueStore)
   const sortProperty = ref<IIssueKeys>('rankId')
   const sortOrder = ref<'asc' | 'desc'>('asc')
   const currentBoardSortingFields = ref<IIssueTableCol[]>([...initBoardSortingFields])
   const currentBoardSortItem = ref<IIssueTableCol>({ ...initBoardSortingFields[0] })
+
+  const filterStr = ref<string>('')
+  const filterSetup = ref<IFilterSetup>({ prioritiesChecked: [], kindsChecked: [] })
+
+  const filteredIssues = computed(() => {
+    const filtered = issues.value.filter((issue: IIssue) => {
+      // FIlter By Keyword
+      const foundByKeyword =
+        issue.title.toLowerCase().indexOf(filterStr.value.trim().toLowerCase()) >= 0 ||
+        issue.summary.toLowerCase().indexOf(filterStr.value.trim().toLowerCase()) >= 0 ||
+        (issue.description &&
+          issue.description.toLowerCase().indexOf(filterStr.value.trim().toLowerCase()) >= 0)
+      // FIlter By Priority
+      const foundByPriority =
+        filterSetup.value.prioritiesChecked.length == 0 ||
+        filterSetup.value.prioritiesChecked.filter((item) => issue.issuePriorityId === item.id)
+          .length > 0
+      // FIlter By Kind
+      const foundByKind =
+        filterSetup.value.kindsChecked.length == 0 ||
+        filterSetup.value.kindsChecked.filter((item) => issue.issueKindId === item.id).length > 0
+
+      return foundByKeyword && foundByPriority && foundByKind
+    })
+
+    return filtered
+  })
 
   const visibleBoardSortingFields = computed(() => {
     const res = currentBoardSortingFields.value
@@ -35,7 +73,7 @@ export const useBoardStore = defineStore('board', () => {
   })
 
   const sortedIssues = computed(() => {
-    const sorted = [...filteredIssues.value]
+    const sorted = filteredIssues.value
     sorted.sort(makeSortedByProperty(sortProperty.value, sortOrder.value))
     return sorted
   })
@@ -108,6 +146,8 @@ export const useBoardStore = defineStore('board', () => {
     visibleBoardSortingFields,
     sortProperty,
     sortOrder,
+    filterStr,
+    filterSetup,
     getBoardIssuesByStatusId,
     getBoardColumsByStatus,
     maxColumnItemOrder,
