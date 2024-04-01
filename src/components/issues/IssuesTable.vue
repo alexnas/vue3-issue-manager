@@ -11,26 +11,21 @@ import { useIssueStatusStore } from '@/stores/issueStatus'
 import { useIssueKindStore } from '@/stores/issueKind'
 import { useIssuePriorityStore } from '@/stores/issuePriority'
 import { useIssueTableColStore } from '@/stores/issueTableCol'
-import { formatDateTime } from '@/tools/formatDate'
+import { formatDateTime, formatDate } from '@/tools/formatDate'
 import { getItemById } from '@/tools/getById'
 import IssueForm from '@/components/issues/IssueForm.vue'
-import AddNewButton from '@/components/shared/AddNewButton.vue'
-import FilterInput from '@/components/shared/FilterInput.vue'
-import IssueColsList from '@/components/issues/IssueColsList.vue'
+import TableActionsPanel from '@/components/issues/TableActionsPanel.vue'
 import { arrowUpIcon, arrowDownIcon } from '@/constants/icons'
 
 const issueTableColStore = useIssueTableColStore()
-
 const { currentIssueTableCols, visibleIssueCols } = storeToRefs(issueTableColStore)
-
 const modalStore = useModalStore()
 const userStore = useUserStore()
 const { users } = storeToRefs(userStore)
 const projectStore = useProjectStore()
 const { projects, currentProject } = storeToRefs(projectStore)
 const issueStore = useIssueStore()
-const { issues, filterStr, filteredIssues, sortProperty, sortOrder, sortedIssues } =
-  storeToRefs(issueStore)
+const { issues, sortProperty, sortOrder, sortedIssues } = storeToRefs(issueStore)
 const issueStatusStore = useIssueStatusStore()
 const { issueStatuses } = storeToRefs(issueStatusStore)
 const issueKindStore = useIssueKindStore()
@@ -49,11 +44,6 @@ const handleSort = (property: IIssueKeys) => {
     sortProperty.value = property
     sortOrder.value = 'asc'
   }
-}
-
-const handleAddNewClick = () => {
-  issueStore.resetCurrentIssue()
-  modalStore.openNewItemModal()
 }
 
 const handleViewClick = (issue: IIssue) => {
@@ -88,21 +78,7 @@ const isColHidden = (field: IIssueKeys): boolean => {
 </script>
 
 <template>
-  <div class="flex w-full justify-between lg:justify-start">
-    <div class="pl-2">Totally: {{ issues.length }} === Filtered: {{ filteredIssues.length }}</div>
-  </div>
-  <div
-    class="mb-2 mt-0 flex h-12 max-h-12 w-auto items-center justify-end text-gray-600 dark:text-gray-200 lg:-mt-12"
-  >
-    <div class="relative right-0 mr-1 p-1">
-      <IssueColsList />
-    </div>
-    <div class="flex justify-end gap-3 pl-2">
-      <div class="text-md flex items-center">Filter</div>
-      <FilterInput v-model="filterStr" />
-      <AddNewButton @openAddNew="handleAddNewClick()" />
-    </div>
-  </div>
+  <TableActionsPanel />
 
   <div
     v-if="currentProject && issues.length >= 0"
@@ -189,7 +165,9 @@ const isColHidden = (field: IIssueKeys): boolean => {
           <td :hidden="isColHidden('color')" class="px-4 py-3">{{ issue.color }}</td>
           <td :hidden="isColHidden('className')" class="px-4 py-3">{{ issue.className }}</td>
           <td :hidden="isColHidden('description')" class="px-4 py-3">{{ issue.description }}</td>
-          <td :hidden="isColHidden('deadline')" class="px-4 py-3">{{ issue.deadline }}</td>
+          <td :hidden="isColHidden('deadline')" class="px-4 py-3">
+            {{ formatDate(issue.deadline) }}
+          </td>
           <td :hidden="isColHidden('createdAt')" class="px-4 py-3">
             {{ formatDateTime(issue.createdAt) }}
           </td>
@@ -204,6 +182,4 @@ const isColHidden = (field: IIssueKeys): boolean => {
 
   <!-- Issue Modal Form -->
   <issue-form />
-
-  <div></div>
 </template>

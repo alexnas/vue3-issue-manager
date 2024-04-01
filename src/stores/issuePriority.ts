@@ -16,7 +16,6 @@ export const useIssuePriorityStore = defineStore('issuePriority', () => {
       loading.value = true
       const { data } = await IssuePriorityService.fetchUsers(currentProjectId)
       issuePriorities.value = data
-      console.log('issuePriorities.value>>>>>>>>', issuePriorities.value)
       loading.value = false
       error.value = null
     } catch (err: any) {
