@@ -11,7 +11,7 @@ import { useIssueStatusStore } from '@/stores/issueStatus'
 import { useIssueKindStore } from '@/stores/issueKind'
 import { useIssuePriorityStore } from '@/stores/issuePriority'
 import { useIssueTableColStore } from '@/stores/issueTableCol'
-import { formatDateTime } from '@/tools/formatDate'
+import { formatDateTime, formatDate } from '@/tools/formatDate'
 import { getItemById } from '@/tools/getById'
 import IssueForm from '@/components/issues/IssueForm.vue'
 import TableActionsPanel from '@/components/issues/TableActionsPanel.vue'
@@ -165,7 +165,9 @@ const isColHidden = (field: IIssueKeys): boolean => {
           <td :hidden="isColHidden('color')" class="px-4 py-3">{{ issue.color }}</td>
           <td :hidden="isColHidden('className')" class="px-4 py-3">{{ issue.className }}</td>
           <td :hidden="isColHidden('description')" class="px-4 py-3">{{ issue.description }}</td>
-          <td :hidden="isColHidden('deadline')" class="px-4 py-3">{{ issue.deadline }}</td>
+          <td :hidden="isColHidden('deadline')" class="px-4 py-3">
+            {{ formatDate(issue.deadline) }}
+          </td>
           <td :hidden="isColHidden('createdAt')" class="px-4 py-3">
             {{ formatDateTime(issue.createdAt) }}
           </td>
