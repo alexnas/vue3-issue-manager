@@ -13,7 +13,7 @@ import { useIssueStatusStore } from '@/stores/issueStatus'
 import { makeSortedByProperty } from '@/tools/sortingTools'
 import { getItemById } from '@/tools/getById'
 import { INITIAL_STATUS_ID } from '@/board/constants/boardConstants'
-import { initBoardSortingFields } from '../constants/boardInitials'
+import { initBoardSortingFields } from '@/board/constants/boardInitials'
 
 export interface IColumn {
   id: number
@@ -28,11 +28,14 @@ export interface IFilterSetup {
 export const useBoardStore = defineStore('board', () => {
   const issueStore = useIssueStore()
   const { issues, currentIssue, preEditedIssue } = storeToRefs(issueStore)
+  const issueStatusStore = useIssueStatusStore()
+  const { issueStatuses } = storeToRefs(issueStatusStore)
+
   const sortProperty = ref<IIssueKeys>('rankId')
   const sortOrder = ref<'asc' | 'desc'>('asc')
   const currentBoardSortingFields = ref<IIssueTableCol[]>([...initBoardSortingFields])
   const currentBoardSortItem = ref<IIssueTableCol>({ ...initBoardSortingFields[0] })
-
+  const currentBoardColumns = ref<IColumn[]>([])
   const filterStr = ref<string>('')
   const filterSetup = ref<IFilterSetup>({ prioritiesChecked: [], kindsChecked: [] })
 
@@ -77,11 +80,6 @@ export const useBoardStore = defineStore('board', () => {
     sorted.sort(makeSortedByProperty(sortProperty.value, sortOrder.value))
     return sorted
   })
-
-  const issueStatusStore = useIssueStatusStore()
-  const { issueStatuses } = storeToRefs(issueStatusStore)
-
-  const currentBoardColumns = ref<IColumn[]>([])
 
   const getBoardIssuesByStatusId = (status: IIssueStatus) => {
     const columnIssues = sortedIssues.value.filter(
@@ -139,6 +137,22 @@ export const useBoardStore = defineStore('board', () => {
     return currentIssue.value.rankId
   }
 
+  const initialiseBoardCols = (currentProjectId: number) => {
+    const storageData = localStorage.getItem('project_#' + currentProjectId + '_currentBoard')
+    if (!(storageData && JSON.parse(storageData) && JSON.parse(storageData).length > 0)) {
+      currentBoardColumns.value = []
+    } else {
+      currentBoardColumns.value = JSON.parse(storageData)
+    }
+  }
+
+  const setIssueBoardCols = (currentProjectId: number) => {
+    localStorage.setItem(
+      'project_#' + currentProjectId + '_currentBoard',
+      JSON.stringify(currentBoardColumns.value)
+    )
+  }
+
   return {
     currentBoardColumns,
     currentBoardSortingFields,
@@ -148,10 +162,13 @@ export const useBoardStore = defineStore('board', () => {
     sortOrder,
     filterStr,
     filterSetup,
+    sortedIssues,
     getBoardIssuesByStatusId,
     getBoardColumsByStatus,
     maxColumnItemOrder,
     createItemOrder,
-    updateItemOrder
+    updateItemOrder,
+    initialiseBoardCols,
+    setIssueBoardCols
   }
 })

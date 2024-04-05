@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watchEffect } from 'vue'
+import { computed, onMounted, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
 import { Icon } from '@iconify/vue'
 import type { IIssue, IIssueKeys } from '@/types'
@@ -67,14 +67,16 @@ const handleDeleteClick = async (issue: IIssue) => {
   modalStore.resetModalState()
 }
 
-watchEffect(() => {
-  currentProject.value?.id
-  issueStore.getIssues()
-})
-
 const isColHidden = (field: IIssueKeys): boolean => {
   return !visibleIssueCols.value.includes(field)
 }
+
+onMounted(async () => {
+  await watchEffect(async () => {
+    currentProject.value?.id
+    await issueStore.getIssues()
+  })
+})
 </script>
 
 <template>

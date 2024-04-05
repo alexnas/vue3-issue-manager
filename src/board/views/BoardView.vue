@@ -3,40 +3,27 @@ import { onMounted, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useProjectStore } from '@/stores/project'
 import { useIssueStore } from '@/stores/issue'
+import { useIssueStatusStore } from '@/stores/issueStatus'
 import { useBoardStore } from '@/board/stores/board'
 import BoardColumns from '@/board/components/BoardColumns.vue'
 import BoardActionsPanel from '@/board/components/BoardActionsPanel.vue'
 
+const issueStatusStore = useIssueStatusStore()
+const issueStore = useIssueStore()
 const projectStore = useProjectStore()
 const { currentProject } = storeToRefs(projectStore)
-
-const issueStore = useIssueStore()
-
 const boardStore = useBoardStore()
-const { currentBoardColumns } = storeToRefs(boardStore)
 
 watchEffect(() => {
-  currentProject.value?.id
-  issueStore.getIssues()
-})
-watchEffect(() => {
-  currentProject.value?.id
   boardStore.getBoardColumsByStatus()
 })
 
 onMounted(async () => {
-  //INIT STORAGE
-  watchEffect(() => {
-    currentBoardColumns.value
-    localStorage.setItem('currentBoard', JSON.stringify(currentBoardColumns.value))
+  await watchEffect(async () => {
+    currentProject.value?.id
+    await issueStore.getIssues()
+    await issueStatusStore.getIssueStatuses()
   })
-
-  const storageData = localStorage.getItem('currentBoard')
-  if (storageData === null) {
-    currentBoardColumns.value = []
-  } else {
-    currentBoardColumns.value = JSON.parse(storageData)
-  }
 })
 </script>
 
