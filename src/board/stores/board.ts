@@ -163,6 +163,7 @@ export const useBoardStore = defineStore('board', () => {
     filterStr,
     filterSetup,
     sortedIssues,
+    filteredIssues,
     getBoardIssuesByStatusId,
     getBoardColumsByStatus,
     maxColumnItemOrder,

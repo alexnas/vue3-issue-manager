@@ -2,14 +2,17 @@
 import { storeToRefs } from 'pinia'
 import { useIssueStore } from '@/stores/issue'
 import { useModalStore } from '@/stores/modal'
+import { useBoardStore } from '@/board/stores/board'
 import IssueForm from '@/components/issues/IssueForm.vue'
 import AddNewButton from '@/components/shared/AddNewButton.vue'
 import BoardSorting from '@/board/components/BoardSorting.vue'
 import BoardFiltering from '@/board/components/BoardFiltering.vue'
 
+const boardStore = useBoardStore()
+const { filteredIssues } = storeToRefs(boardStore)
 const modalStore = useModalStore()
 const issueStore = useIssueStore()
-const { issues, filteredIssues } = storeToRefs(issueStore)
+const { issues } = storeToRefs(issueStore)
 
 const handleAddNewClick = () => {
   issueStore.resetCurrentIssue()

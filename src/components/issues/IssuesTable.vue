@@ -181,6 +181,13 @@ onMounted(async () => {
     No issues - the list is empty
   </div>
 
+  <div
+    v-if="(!sortedIssues || sortedIssues.length == 0) && issues.length > 0"
+    class="flex justify-center pt-6 text-4xl text-amber-500"
+  >
+    No issues - the filtered list is empty
+  </div>
+
   <!-- Issue Modal Form -->
   <issue-form />
 </template>
