@@ -82,10 +82,7 @@ onMounted(async () => {
 <template>
   <TableActionsPanel />
 
-  <div
-    v-if="currentProject && issues.length >= 0"
-    class="relative overflow-x-auto shadow-md sm:rounded-lg"
-  >
+  <div v-if="issues && issues.length > 0" class="relative overflow-x-auto shadow-md sm:rounded-lg">
     <table class="w-full text-left text-sm text-gray-500 dark:text-gray-300 rtl:text-right">
       <thead
         class="sticky top-0 bg-teal-100 text-xs uppercase text-gray-700 dark:bg-teal-700 dark:text-gray-100"
@@ -180,7 +177,9 @@ onMounted(async () => {
       </tbody>
     </table>
   </div>
-  <div v-else>Sorry, no entries</div>
+  <div v-else class="flex justify-center pt-6 text-4xl text-amber-500">
+    No issues - the list is empty
+  </div>
 
   <!-- Issue Modal Form -->
   <issue-form />
