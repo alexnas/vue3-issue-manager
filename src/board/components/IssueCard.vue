@@ -1,9 +1,18 @@
 <script setup lang="ts">
 import { type PropType } from 'vue'
+import { storeToRefs } from 'pinia'
 import { Icon } from '@iconify/vue'
 import type { IIssue } from '@/types'
 import { useIssueStore } from '@/stores/issue'
 import { useModalStore } from '@/stores/modal'
+import { useUserStore } from '@/stores/user'
+import { useIssuePriorityStore } from '@/stores/issuePriority'
+import { getItemById } from '@/tools/getById'
+
+const issuePriorityStore = useIssuePriorityStore()
+const { issuePriorities } = storeToRefs(issuePriorityStore)
+const userStore = useUserStore()
+const { users } = storeToRefs(userStore)
 
 const modalStore = useModalStore()
 const issueStore = useIssueStore()
@@ -38,9 +47,17 @@ const handleEditClick = () => {
       </div>
     </div>
 
-    <div>{{ issue?.rankId }} / {{ issue?.id }}</div>
-    <div class="font-semibold">{{ issue?.summary }}</div>
-    <div>{{ issue?.description }}</div>
+    <div class="flex items-center justify-between">
+      <div>{{ issue?.deadline }}</div>
+      <div class="bg-amber-200/50 p-1 uppercase">
+        {{ issue?.issuePriorityId && getItemById(issuePriorities, issue.issuePriorityId)?.name }}
+      </div>
+    </div>
+
+    <div class="rounded border-2 border-gray-400/50 p-1 font-semibold">{{ issue?.summary }}</div>
+    <div class="flex justify-between">
+      <div>Assignee: {{ issue?.assigneeId && getItemById(users, issue.assigneeId)?.name }}</div>
+    </div>
   </div>
 </template>
 

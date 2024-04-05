@@ -19,7 +19,7 @@ const { isModalActive } = storeToRefs(modalStore)
   <Teleport to="body">
     <div
       v-show="isModalActive"
-      class="absolute left-0 top-0 flex h-screen w-full justify-center overflow-auto bg-black bg-opacity-60 px-8"
+      class="absolute left-0 top-0 flex h-screen w-full justify-center overflow-auto bg-gray-800/30 bg-opacity-60 px-8"
     >
       <div
         v-if="isModalActive"

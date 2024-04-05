@@ -1,8 +1,8 @@
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { IIssueTableCol } from '@/types'
 
-const initialIssueTableCols: IIssueTableCol[] = [
+export const initialIssueTableCols: IIssueTableCol[] = [
   { field: 'id', title: 'ID', position: 1, isVisible: true },
   { field: 'isActive', title: 'ON', position: 1, isVisible: true },
   { field: 'title', title: 'TITLE', position: 1, isVisible: true },
@@ -40,17 +40,32 @@ export const useIssueTableColStore = defineStore('issueTableCol', () => {
       .filter((item) => item)
   })
 
-  const setCurrentIssueTableCols = (issueTableCols: IIssueTableCol[]) => {
-    currentIssueTableCols.value = [...issueTableCols]
-    localStorage.setItem('issueTableCols', JSON.stringify([...issueTableCols]))
-    return currentIssueTableCols.value
+  const initialiseIssueTableCols = (currentProjectId: number) => {
+    const storageData = localStorage.getItem('project_#' + currentProjectId + '_issueTableCols')
+    if (!(storageData && JSON.parse(storageData) && JSON.parse(storageData).length > 0)) {
+      localStorage.setItem(
+        'project_#' + currentProjectId + '_issueTableCols',
+        JSON.stringify(initialIssueTableCols)
+      )
+      currentIssueTableCols.value = [...initialIssueTableCols]
+    } else {
+      currentIssueTableCols.value = [...JSON.parse(storageData)]
+    }
   }
 
-  onMounted(async () => {
-    const data = localStorage.getItem('issueTableCols')
-    const currentIssueTableCols = data ? JSON.parse(data) : [...initialIssueTableCols]
-    setCurrentIssueTableCols(currentIssueTableCols)
-  })
+  const setIssueTableCols = (issueTableCols: IIssueTableCol[], currentProjectId: number) => {
+    localStorage.setItem(
+      'project_#' + currentProjectId + '_issueTableCols',
+      JSON.stringify([...issueTableCols])
+    )
+  }
 
-  return { currentIssueTableCols, visibleIssueCols, loading, error, setCurrentIssueTableCols }
+  return {
+    currentIssueTableCols,
+    visibleIssueCols,
+    loading,
+    error,
+    initialiseIssueTableCols,
+    setIssueTableCols
+  }
 })

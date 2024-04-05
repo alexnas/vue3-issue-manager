@@ -20,8 +20,8 @@ const { issueKinds } = storeToRefs(issueKindStore)
 
 const isHiddenModal = ref(true)
 const isHiddenDueDateMenu = ref(true)
-const isHiddenPriorityMenu = ref(true)
-const isHiddenKindMenu = ref(true)
+const isHiddenPriorityMenu = ref(false)
+const isHiddenKindMenu = ref(false)
 const dueItems = ref<IDueItem[]>([...initDueItems])
 const targetDropDown = ref(null)
 

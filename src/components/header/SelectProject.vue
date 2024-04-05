@@ -4,18 +4,13 @@ import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { onClickOutside } from '@vueuse/core'
 import { Icon } from '@iconify/vue'
-import { useIssueTableColStore } from '@/stores/issueTableCol'
 import { useProjectStore } from '@/stores/project'
-import { getProjectById } from '@/tools/getProjectById'
 import SelectProjectItem from '@/components/header/SelectProjectItem.vue'
+import { getProjectById } from '@/tools/getProjectById'
 
 const route = useRoute()
-
 const projectStore = useProjectStore()
 const { projects, currentProject } = storeToRefs(projectStore)
-
-const issueTableColStore = useIssueTableColStore()
-const { currentIssueTableCols } = storeToRefs(issueTableColStore)
 
 const isHiddenMenu = ref(true)
 const targetDropDown = ref(null)
@@ -29,7 +24,6 @@ const handleSelectProject = (id: number | null) => {
 
 onClickOutside(targetDropDown, () => {
   isHiddenMenu.value = true
-  issueTableColStore.setCurrentIssueTableCols(currentIssueTableCols.value)
 })
 
 const titleActiveClass = computed(() => {

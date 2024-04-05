@@ -8,9 +8,10 @@ import { useBoardStore } from '@/board/stores/board'
 import IssueCard from '@/board/components/IssueCard.vue'
 
 const issueStore = useIssueStore()
+let { issues } = storeToRefs(issueStore)
 
 const boardStore = useBoardStore()
-let { currentBoardColumns } = storeToRefs(boardStore)
+let { currentBoardColumns, filteredIssues } = storeToRefs(boardStore)
 
 const onSaveDraggedData = async (newIndex: number, issuesList: IIssue[], issueStatusId: number) => {
   const listLength = issuesList ? issuesList.length : null
@@ -70,7 +71,7 @@ const bulletColors = (index: number) => {
 </script>
 
 <template>
-  <div class="flex gap-6">
+  <div v-if="issues && issues.length > 0" class="flex gap-6">
     <div v-for="(column, columnIndex) in currentBoardColumns" :key="column.issueStatus.id">
       <div
         class="flex min-w-60 max-w-60 flex-col gap-2 rounded border border-gray-800 text-gray-300"
@@ -115,6 +116,16 @@ const bulletColors = (index: number) => {
         </div>
       </div>
     </div>
+  </div>
+  <div v-else class="flex justify-center pt-6 text-4xl text-amber-500">
+    No issues - kanban board is empty
+  </div>
+
+  <div
+    v-if="(!filteredIssues || filteredIssues.length == 0) && issues.length > 0"
+    class="flex justify-center pt-6 text-4xl text-amber-500"
+  >
+    No issues - the filtered kanban is empty
   </div>
 </template>
 

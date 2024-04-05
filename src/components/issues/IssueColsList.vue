@@ -4,8 +4,11 @@ import { storeToRefs } from 'pinia'
 import { onClickOutside } from '@vueuse/core'
 import { Icon } from '@iconify/vue'
 import { useIssueTableColStore } from '@/stores/issueTableCol'
+import { useProjectStore } from '@/stores/project'
 import CustomCheckbox from '@/components/issues/CustomCheckbox.vue'
 
+const projectStore = useProjectStore()
+const { currentProject } = storeToRefs(projectStore)
 const issueTableColStore = useIssueTableColStore()
 const { currentIssueTableCols } = storeToRefs(issueTableColStore)
 
@@ -14,7 +17,8 @@ const targetDropDown = ref(null)
 
 onClickOutside(targetDropDown, () => {
   isHiddenMenu.value = true
-  issueTableColStore.setCurrentIssueTableCols(currentIssueTableCols.value)
+  currentProject.value &&
+    issueTableColStore.setIssueTableCols(currentIssueTableCols.value, currentProject.value.id)
 })
 </script>
 
