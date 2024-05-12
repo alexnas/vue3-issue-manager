@@ -1,6 +1,6 @@
 # Vue3 Task Manager
 
-This application is an issue tracker and management system. It offers two main graphical and organizational views: Kanban Board and Table Board. One can control issue data as a list of tasks in the table of a traditional kanban cards board. Cards grouped by current issue status. You can drag-and-drop cards by status columns or edit cards to change current issue parameters.
+This application is an issue tracker and management system. It offers two main graphical and organizational views: Kanban Board and Table Board. One can control issue data as a list of tasks in the table of a traditional kanban cards board. Cards grouped by current issue status. You can drag-and-drop cards by status columns or edit cards to change current issue parameters. JWT Auth provide user registering and authentication into the app.
 
 ## Development Stage
 
@@ -16,7 +16,7 @@ In Progress.
 - Vue Router 4
 - Vue-Draggable-Plus (Drag-and-drop)
 - Vee-Validate
-- JWT Auth (prospective)
+- JWT Auth
 - Axios
 - REST api
 - TailwindCss
