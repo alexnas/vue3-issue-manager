@@ -7,6 +7,7 @@ import BoardSwitcher from '@/board/components/BoardSwitcher.vue'
 import { useProjectStore } from '@/stores/project'
 import { onMounted } from 'vue'
 import SelectProject from '@/components/header/SelectProject.vue'
+import AuthControls from '@/auth/components/AuthControls.vue'
 
 const projectStore = useProjectStore()
 
@@ -56,6 +57,8 @@ onMounted(async () => {
       <div class="-mt-1 ml-6">
         <DarkModeButton />
       </div>
+
+      <AuthControls />
     </div>
   </header>
 </template>

@@ -1,5 +1,6 @@
 import type { RouteRecordRaw } from 'vue-router'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
+import authRoutes from '@/auth/routes/authRoutes'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -33,6 +34,8 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/IssuesView.vue'),
     meta: { layout: DefaultLayout }
   },
+
+  ...authRoutes,
 
   {
     path: '/:pathMatch(.*)*',
