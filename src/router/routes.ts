@@ -19,20 +19,29 @@ const routes: Array<RouteRecordRaw> = [
     path: '/projects',
     name: 'Projects',
     component: () => import('@/views/ProjectsView.vue'),
-    meta: { layout: DefaultLayout }
+    meta: {
+      layout: DefaultLayout,
+      authRequired: true
+    }
   },
   {
     path: '/users',
     name: 'Users',
     component: () => import('@/views/UsersView.vue'),
-    meta: { layout: DefaultLayout }
+    meta: {
+      layout: DefaultLayout,
+      authRequired: true
+    }
   },
 
   {
     path: '/projects/:projectId/issues',
     name: 'Project',
     component: () => import('@/views/IssuesView.vue'),
-    meta: { layout: DefaultLayout }
+    meta: {
+      layout: DefaultLayout,
+      authRequired: true
+    }
   },
 
   ...authRoutes,
